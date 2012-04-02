@@ -17,6 +17,8 @@
 #define kOSXDevTopicMaxCount				25
 #define kOSXDevThreadMaxCount				10
 
+#define kOSXDevURLPrefix					@"http://www.osxdev.org/phpBB3/"
+
 #define UIViewAutoresizingFlexibleAll		(UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth)
 
 #endif

@@ -35,7 +35,7 @@
 	tmpLabel.textColor = [UIColor darkGrayColor];
 	tmpLabel.font = [UIFont boldSystemFontOfSize:18.f];
 	tmpLabel.numberOfLines = 0;
-	tmpLabel.text = [NSString stringWithFormat:@"%Version : %@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
+	tmpLabel.text = [NSString stringWithFormat:@"Version : %@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
 	
 	[self.view addSubview:tmpLabel];
 }

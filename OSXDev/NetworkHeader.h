@@ -9,7 +9,6 @@
 #ifndef OSXDev_NetworkHeader_h
 #define OSXDev_NetworkHeader_h
 
-#define kOSXDevURLPrefix			@"http://www.osxdev.org/phpBB3/"
 #define	kOSXDevURLMain				@"index.php"
 #define kOSXDevURLViewForum			@"viewforum.php"
 #define kOSXDevURLViewTopic			@"viewtopic.php"

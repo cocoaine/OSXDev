@@ -416,7 +416,7 @@
 		self.writeButton.enabled = YES;
 		
 		[self.detailWebView loadHTMLString:htmlString
-								   baseURL:[NSURL URLWithString:@"http://www.osxdev.org/phpBB3/"]];
+								   baseURL:[NSURL URLWithString:kOSXDevURLPrefix]];
 	}
 	else {
 		
