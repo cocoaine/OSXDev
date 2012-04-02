@@ -374,6 +374,10 @@
 	[self.navigationItem setRightBarButtonItem:self.refreshButton animated:YES];
 	[self.indicatorView stopAnimating];
 	
+	if ([self.view viewWithTag:kOSXDevErrorLabelTag]) {
+		[(UIView *)[self.view viewWithTag:kOSXDevErrorLabelTag] removeFromSuperview];
+	}
+	
 	if (requestType == NetworkRequestViewForum) {
 		self.topicList = nil;
 		[self.topicTableView reloadData];
@@ -431,7 +435,24 @@
 }
 
 - (void)requestFailed:(NSString *)connectionIdentifier requestType:(NetworkRequestType)requestType error:(NSError *)error {
+	[self.navigationItem setRightBarButtonItem:self.refreshButton animated:YES];
+	[self.indicatorView stopAnimating];
 	
+	if (requestType == NetworkRequestViewForum) {
+		if ([self.view viewWithTag:kOSXDevErrorLabelTag] == nil) {
+			UILabel *errorLabel = [[[UILabel alloc] initWithFrame:self.view.bounds] autorelease];
+			errorLabel.autoresizingMask = UIViewAutoresizingFlexibleAll;
+			errorLabel.textAlignment = UITextAlignmentCenter;
+			errorLabel.backgroundColor = [UIColor whiteColor];
+			errorLabel.textColor = [UIColor grayColor];
+			errorLabel.font = [UIFont boldSystemFontOfSize:18.f];
+			errorLabel.tag = kOSXDevErrorLabelTag;
+			errorLabel.numberOfLines = 0;
+			errorLabel.text = @"해당 페이지를 불러오지 못하였습니다.\n우측 상단 Refresh 버튼을 눌러서\n재시도를 해주세요.";
+			
+			[self.view addSubview:errorLabel];
+		}
+	}
 }
 
 @end
