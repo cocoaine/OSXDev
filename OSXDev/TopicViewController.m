@@ -398,17 +398,22 @@
 		
 		self.endOfTopic = NO;
 		
+		NSArray *components = [self.infoString componentsSeparatedByString:@"개"];
+		self.totalPage = [[components objectAtIndex:1] integerValue];
+		[self.navigationItem setTitle:[NSString stringWithFormat:@"%@ %d페이지", self.forumTitle, self.page]];
+		
 		if ([self.topicList count] < kOSXDevTopicMaxCount) {
 			self.endOfTopic = YES;
 			[self.nextButton setEnabled:NO];
 		}
 		else {
-			[self.nextButton setEnabled:YES];
+			if ([self.topicList count] == kOSXDevTopicMaxCount && self.page == self.totalPage) {
+				[self.nextButton setEnabled:NO];
+			}
+			else {
+				[self.nextButton setEnabled:YES];
+			}
 		}
-		
-		NSArray *components = [self.infoString componentsSeparatedByString:@"개"];
-		self.totalPage = [[components objectAtIndex:1] integerValue];
-		[self.navigationItem setTitle:[NSString stringWithFormat:@"%@ %d페이지", self.forumTitle, self.page]];
 		
 		if ([self.infoString rangeOfString:@"글: 25"].location != NSNotFound) {
 			// 일단 한 페이지에 글이 25개 기준으로 25개만 가져오고 25개만 있는 상황일 때...

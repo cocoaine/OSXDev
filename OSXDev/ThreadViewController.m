@@ -394,17 +394,22 @@
 		
 		self.endOfThread = NO;
 		
+		NSArray *components = [self.infoString componentsSeparatedByString:@"개"];
+		self.totalPage = [[components objectAtIndex:1] integerValue];
+		[self.navigationItem setTitle:[NSString stringWithFormat:@"%d페이지 / %d페이지", self.page, self.totalPage]];
+		
 		if (count < kOSXDevThreadMaxCount) {
 			self.endOfThread = YES;
 			[self.nextButton setEnabled:NO];
 		}
 		else {
-			[self.nextButton setEnabled:YES];
+			if (count == kOSXDevThreadMaxCount && self.page == self.totalPage) {
+				[self.nextButton setEnabled:NO];
+			}
+			else {
+				[self.nextButton setEnabled:YES];
+			}
 		}
-		
-		NSArray *components = [self.infoString componentsSeparatedByString:@"개"];
-		self.totalPage = [[components objectAtIndex:1] integerValue];
-		[self.navigationItem setTitle:[NSString stringWithFormat:@"%d페이지 / %d페이지", self.page, self.totalPage]];
 		
 		if ([self.infoString rangeOfString:@"글: 10"].location != NSNotFound) {
 			// 일단 한 페이지에 글이 10개 기준으로 10개만 가져오고 10개만 있는 상황일 때...
