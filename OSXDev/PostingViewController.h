@@ -8,9 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "LoginViewController.h"
+
 @protocol PostingViewControllerDelegate;
 
-@interface PostingViewController : UIViewController <UITextFieldDelegate, UITextViewDelegate, UITableViewDelegate, UITableViewDataSource, NetworkObjectDelegate>
+@interface PostingViewController : UIViewController <UITextFieldDelegate, UITextViewDelegate, UITableViewDelegate, UITableViewDataSource, LoginViewControllerDelegate, NetworkObjectDelegate>
 
 @property (assign, nonatomic) id <PostingViewControllerDelegate> delegate;
 @property (assign, nonatomic) NSInteger forumId;
@@ -26,6 +28,8 @@
 @property (retain, nonatomic) UITableView *postingTableView;
 @property (retain, nonatomic) UITextField *subjectTextField;
 @property (retain, nonatomic) UITextView *messageTextView;
+
+@property (assign, nonatomic) BOOL forceCancel;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil forumId:(NSInteger)forumId topicId:(NSInteger)topicId;
 

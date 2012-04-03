@@ -110,7 +110,12 @@
 	[[UserInfo sharedInfo] setUserId:nil];
 	[[UserInfo sharedInfo] setUserPassword:nil];
 	
-	[self.navigationController dismissModalViewControllerAnimated:YES];
+	if (self.delegate && [self.delegate respondsToSelector:@selector(loginViewControllerDidCancel:)]) {
+		[self.delegate loginViewControllerDidCancel:self];
+	}
+	else {
+		[self.navigationController dismissModalViewControllerAnimated:YES];
+	}
 }
 
 - (void)startLoginRequest {

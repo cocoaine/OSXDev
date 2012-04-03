@@ -27,12 +27,14 @@
 @synthesize postingTableView = _postingTableView;
 @synthesize subjectTextField = _subjectTextField;
 @synthesize messageTextView = _messageTextView;
+@synthesize forceCancel = _forceCancel;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil forumId:(NSInteger)forumId topicId:(NSInteger)topicId
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
+		self.forceCancel = NO;
 		
 		// topic id는 무조건 있어야 됨.
 		// forum id는 -1일 경우에는 new topic, 그 이외에는 reply
@@ -82,11 +84,12 @@
 																					action:@selector(clickPosting:)] autorelease];
 	[self.navigationItem setRightBarButtonItem:postingButton animated:YES];
 	
-	// just for test
-	self.navigationController.view.userInteractionEnabled = NO;
-	[SVProgressHUD showInView:self.view status:@"글쓰기 불러오는 중..."];
-	self.connectionIdentifier = [self.networkObject postingDataWithForumId:self.forumId
-																   topicId:self.topicId];
+	if ([UserInfo sharedInfo].loginStatus == UserInfoLoginStatusLoggedIn) {
+		self.navigationController.view.userInteractionEnabled = NO;
+		[SVProgressHUD showInView:self.view status:@"글쓰기 불러오는 중..."];
+		self.connectionIdentifier = [self.networkObject postingDataWithForumId:self.forumId
+																	   topicId:self.topicId];
+	}
 }
 
 - (void)viewDidUnload
@@ -98,7 +101,24 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	
-	[self.subjectTextField becomeFirstResponder];
+	if (self.forceCancel) {
+		[self dismissModalViewControllerAnimated:YES];
+	}
+	else {
+		if ([UserInfo sharedInfo].loginStatus == UserInfoLoginStatusNotLoggedIn) {
+			LoginViewController *viewController = [[[LoginViewController alloc] initWithNibName:nil
+																						 bundle:nil] autorelease];
+			viewController.delegate = self;
+			
+			UINavigationController *navController = [[[UINavigationController alloc] initWithRootViewController:viewController] autorelease];
+			
+			if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+				navController.modalPresentationStyle = UIModalPresentationFormSheet;
+			}
+			
+			[self.navigationController presentModalViewController:navController animated:NO];
+		}
+	}
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -261,6 +281,26 @@
 }
 
 // MARK: -
+// MARK: << LoginViewControllerDelegate >>
+- (void)loginViewControllerDidFinishLogin:(LoginViewController *)controller {
+	[controller dismissModalViewControllerAnimated:YES];
+	
+	if ([UserInfo sharedInfo].loginStatus == UserInfoLoginStatusLoggedIn) {
+		self.navigationController.view.userInteractionEnabled = NO;
+		[SVProgressHUD showInView:self.view status:@"글쓰기 불러오는 중..."];
+		self.connectionIdentifier = [self.networkObject postingDataWithForumId:self.forumId
+																	   topicId:self.topicId];
+	}
+}
+
+- (void)loginViewControllerDidCancel:(LoginViewController *)controller {
+	NSLog(@"loginViewControllerDidCancel");
+	self.forceCancel = YES;
+	
+	[controller dismissModalViewControllerAnimated:NO];
+}
+
+// MARK: -
 // MARK: << NetworkObjectDelegate >>
 - (void)requestSucceed:(NSData *)data forRequest:(NSString *)connectionIdentifier requestType:(NetworkRequestType)requestType {
 	self.navigationController.view.userInteractionEnabled = YES;
@@ -279,6 +319,11 @@
 		if (subject && [subject length] != 0) {
 			[self.subjectTextField setText:subject];
 			[self.subjectTextField setEnabled:NO];
+			
+			[self.messageTextView becomeFirstResponder];
+		}
+		else {
+			[self.subjectTextField becomeFirstResponder];
 		}
 	}
 	else if (requestType == NetworkRequestPosting) {
