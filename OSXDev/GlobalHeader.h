@@ -13,6 +13,7 @@
 #import "AsyncURLConnection.h"
 #import "HTMLQueryHelper.h"
 #import "SVProgressHUD.h"
+#import "UserInfo.h"
 
 #define kOSXDevTopicMaxCount				25
 #define kOSXDevThreadMaxCount				10
@@ -20,6 +21,8 @@
 #define kOSXDevErrorLabelTag				5901
 
 #define kOSXDevURLPrefix					@"http://www.osxdev.org/phpBB3/"
+
+#define kOSXDevNotificationLoginSucceed		@"kOSXDevNotificationLoginSucceed"
 
 #define UIViewAutoresizingFlexibleAll		(UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth)
 

@@ -13,11 +13,14 @@
 + (NSDictionary *)convertForumInfo:(NSData *)htmlData;
 + (NSDictionary *)convertTopicInfo:(NSData *)htmlData;
 + (NSDictionary *)convertThreadInfo:(NSData *)htmlData;
++ (NSDictionary *)convertPostingInfo:(NSData *)htmlData;
++ (NSString *)getSid:(NSData *)htmlData;;
 
 @end
 
 @interface QueryHelper : NSObject
 
 + (NSInteger)identifierWithURLString:(NSString *)urlString token:(NSString *)token;
++ (NSString *)valueWithURLString:(NSString *)urlString token:(NSString *)token;
 
 @end

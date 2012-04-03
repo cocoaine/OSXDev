@@ -79,6 +79,11 @@
 	
 	[self.view addSubview:self.topicTableView];
 	
+	UIBarButtonItem *refreshButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh
+																					target:self
+																					action:@selector(clickRefresh:)] autorelease];
+	self.refreshButton = refreshButton;
+	
 	UIActivityIndicatorViewStyle indicatorViewStyle;
 	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
 		indicatorViewStyle = UIActivityIndicatorViewStyleWhite;
@@ -295,7 +300,19 @@
 }
 
 - (void)clickWrite:(id)sender {
+	PostingViewController *viewController = [[[PostingViewController alloc] initWithNibName:nil
+																					 bundle:nil
+																					forumId:self.forumId
+																					topicId:-1] autorelease];
+	viewController.delegate = self;
 	
+	UINavigationController *navController = [[[UINavigationController alloc] initWithRootViewController:viewController] autorelease];
+	
+	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+		navController.modalPresentationStyle = UIModalPresentationFormSheet;
+	}
+	
+	[self.navigationController presentModalViewController:navController animated:YES];
 }
 
 // MARK: -
@@ -366,6 +383,15 @@
 																		   start:self.start];
 		}
 	}
+}
+
+// MARK: -
+// MARK: << PostingViewControllerDelegate >>
+- (void)postingViewControllerDidFinishPosting:(PostingViewController *)controller {
+	[controller dismissModalViewControllerAnimated:YES];
+	
+	// 글 다시 불러오기.
+	[self clickRefresh:nil];
 }
 
 // MARK: -
@@ -453,6 +479,8 @@
 			[self.view addSubview:errorLabel];
 		}
 	}
+	
+	self.connectionIdentifier = nil;
 }
 
 @end

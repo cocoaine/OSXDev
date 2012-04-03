@@ -93,14 +93,8 @@
 		NSMutableArray *sectionHeaderList = [NSMutableArray arrayWithCapacity:0];
 		
 		for (CXMLElement *element in resultNodes) {
-			if ([NSStringByTrimmed([element stringValue]) length] == 0) {
-				continue;
-			}
-			
-			NSArray *components = [NSStringByTrimmed([element stringValue])
-								   componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
 			// 0번째가 section header
-			NSString *sectionHeader = (NSString *)[components objectAtIndex:0];
+			NSString *sectionHeader = [element stringValue];
 			[sectionHeaderList addObject:sectionHeader];
 		}
 		
@@ -130,7 +124,7 @@
 	resultNodes = [htmlParser nodesForXPath:kOSXDevXPathTopicList error:nil];
 	NSMutableArray *topicList = [NSMutableArray arrayWithCapacity:[resultNodes count]];
 	
-//	NSLog(@"count : %d", [resultNodes count]);
+	NSLog(@"count : %d", [resultNodes count]);
 	for (CXMLElement *element in resultNodes) {
 		CXMLNode *elementNode = [element childAtIndex:0];
 		
@@ -277,6 +271,97 @@
 	return threadInfo;
 }
 
++ (NSDictionary *)convertPostingInfo:(NSData *)htmlData {
+	NSMutableDictionary *postingInfo = [NSMutableDictionary dictionaryWithCapacity:0];
+	
+    CXMLDocument *htmlParser = [[[CXHTMLDocument alloc] initWithXHTMLData:htmlData
+																 encoding:NSUTF8StringEncoding
+																  options:0
+																	error:nil] autorelease];
+	
+	NSString *subject = nil;
+	NSString *topicCurPostId = nil;
+	NSString *lastClick = nil;
+	NSString *creationTime = nil;
+	NSString *formToken = nil;
+	
+	NSArray *resultNodes = [htmlParser nodesForXPath:kOSXDevXPathTopicCurPostId error:nil];
+	if ([resultNodes count] != 0) {
+		for (CXMLElement *element in resultNodes) {
+			topicCurPostId = [[element attributeForName:@"value"] stringValue];
+		}
+	}
+	
+	resultNodes = [htmlParser nodesForXPath:kOSXDevXPathLastClick error:nil];
+	if ([resultNodes count] != 0) {
+		for (CXMLElement *element in resultNodes) {
+			lastClick = [[element attributeForName:@"value"] stringValue];
+		}
+	}
+	
+	resultNodes = [htmlParser nodesForXPath:kOSXDevXPathCreationTime error:nil];
+	if ([resultNodes count] != 0) {
+		for (CXMLElement *element in resultNodes) {
+			creationTime = [[element attributeForName:@"value"] stringValue];
+		}
+	}
+	
+	resultNodes = [htmlParser nodesForXPath:kOSXDevXPathFormToken error:nil];
+	if ([resultNodes count] != 0) {
+		for (CXMLElement *element in resultNodes) {
+			formToken = [[element attributeForName:@"value"] stringValue];
+		}
+	}
+	
+	resultNodes = [htmlParser nodesForXPath:kOSXDevXPathPostingSubject error:nil];
+	if ([resultNodes count] != 0) {
+		for (CXMLElement *element in resultNodes) {
+			subject = [[element attributeForName:@"value"] stringValue];
+		}
+	}
+	
+	if (subject) {
+		[postingInfo setObject:subject forKey:@"subject"];
+	}
+	
+	if (topicCurPostId) {
+		[postingInfo setObject:topicCurPostId forKey:@"topic_cur_post_id"];
+	}
+	
+	if (lastClick) {
+		[postingInfo setObject:lastClick forKey:@"lastclick"];
+	}
+	
+	if (creationTime) {
+		[postingInfo setObject:creationTime forKey:@"creation_time"];
+	}
+	
+	if (formToken) {
+		[postingInfo setObject:formToken forKey:@"form_token"];
+	}
+	
+	return postingInfo;
+}
+
++ (NSString *)getSid:(NSData *)htmlData {
+	CXMLDocument *htmlParser = [[[CXHTMLDocument alloc] initWithXHTMLData:htmlData
+																 encoding:NSUTF8StringEncoding
+																  options:0
+																	error:nil] autorelease];
+	
+    NSArray *resultNodes = [htmlParser nodesForXPath:@"//a[contains(@href, 'sid')]" error:nil];
+	
+	NSString *sidString = nil;
+	for (CXMLElement *element in resultNodes) {
+		CXMLNode *attrNode = [element attributeForName:@"href"];
+		NSString *urlString = [attrNode stringValue];
+		
+		sidString = [QueryHelper valueWithURLString:urlString token:@"sid"];
+	}
+	
+	return sidString;
+}
+
 @end
 
 @implementation QueryHelper
@@ -300,6 +385,27 @@
 	}
 	
 	return -1;
+}
+
++ (NSString *)valueWithURLString:(NSString *)urlString token:(NSString *)token {
+	NSURL *url = [NSURL URLWithString:urlString];
+	
+	NSString *queryString = [url query];
+	if (queryString) {
+		NSArray *params = [queryString componentsSeparatedByString:@"&"];
+		for (int i = 0; i < [params count]; i++) {
+			NSArray *keyValues = [[params objectAtIndex:i] componentsSeparatedByString:@"="];
+			if ([keyValues count] >= 2) {
+				NSString *key = [keyValues objectAtIndex:0];
+				if ([key isEqualToString:token]) {
+					NSString *value = [keyValues objectAtIndex:1];
+					return value;
+				}
+			}
+		}
+	}
+	
+	return nil;
 }
 
 @end

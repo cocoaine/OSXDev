@@ -12,9 +12,14 @@
 #import "ThreadViewController.h"
 #import "SettingViewController.h"
 
+#define kOSXDevConnectionInfoKeyReqForum		@"req_forum"
+#define kOSXDevConnectionInfoKeyReqLogin		@"req_login"
+
 @interface ForumViewController ()
 - (void)clickRefresh:(id)sender;
-- (void)clickSetting:(id)sender;
+//- (void)clickSetting:(id)sender;
+- (void)clickLogin:(id)sender;
+- (void)clickLogout:(id)sender;
 @end
 
 @implementation ForumViewController
@@ -24,7 +29,8 @@
 @synthesize forumList = _forumList;
 @synthesize activeTopicList = _activeTopicList;
 @synthesize sectionHeaderList = _sectionHeaderList;
-@synthesize connectionIdentifier = _connectionIdentifier;
+//@synthesize connectionIdentifier = _connectionIdentifier;
+@synthesize connectionInfo = _connectionInfo;
 @synthesize indicatorView = _indicatorView;
 @synthesize indicatorItem = _indicatorItem;
 @synthesize refreshButton = _refreshButton;
@@ -47,12 +53,6 @@
 	else {
 		indicatorViewStyle = UIActivityIndicatorViewStyleGray;
 	}
-	
-	UIBarButtonItem *settingButton = [[[UIBarButtonItem alloc] initWithTitle:@"정보" 
-																	   style:UIBarButtonItemStylePlain
-																	  target:self
-																	  action:@selector(clickSetting:)] autorelease];
-	[self.navigationItem setLeftBarButtonItem:settingButton animated:YES];
 	
 	UIActivityIndicatorView *indicatorView = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:indicatorViewStyle] autorelease];
 	indicatorView.hidesWhenStopped = YES;
@@ -82,7 +82,27 @@
 	[self.indicatorView startAnimating];
 	[self.navigationItem setRightBarButtonItem:self.indicatorItem animated:YES];
 	
-	self.connectionIdentifier = [self.networkObject forumList];
+	NSMutableDictionary *connectionInfo = [NSMutableDictionary dictionaryWithCapacity:0];
+	self.connectionInfo = connectionInfo;
+	
+	NSString *connectionIdentifier = [self.networkObject forumList];
+	[self.connectionInfo setObject:connectionIdentifier forKey:kOSXDevConnectionInfoKeyReqForum];
+	
+	// TODO :
+	// 쿠키 정리 후에 앱 입장할 때 자동로그인 설정되어 있으면 로그인 시도한다.
+	// [UserInfo sharedInfo].autoLogin
+	if ([[UserInfo sharedInfo] userId] != nil && [[UserInfo sharedInfo] userPassword] != nil &&
+		[UserInfo sharedInfo].autoLogin) {
+		connectionIdentifier = [self.networkObject login];
+		[self.connectionInfo setObject:connectionIdentifier forKey:kOSXDevConnectionInfoKeyReqLogin];
+	}
+	else {
+		UIBarButtonItem *loginButton = [[[UIBarButtonItem alloc] initWithTitle:@"로그인"
+																		 style:UIBarButtonItemStylePlain
+																		target:self
+																		action:@selector(clickLogin:)] autorelease];
+		[self.navigationItem setLeftBarButtonItem:loginButton animated:YES];
+	}
 }
 
 - (void)viewDidUnload
@@ -95,6 +115,26 @@
 	[super viewWillAppear:animated];
 	
 	[self.navigationController setToolbarHidden:YES animated:YES];
+	
+	UIBarButtonItem *item = nil;
+	if ([UserInfo sharedInfo].loginStatus == UserInfoLoginStatusLoggedIn) {
+		item = [[[UIBarButtonItem alloc] initWithTitle:@"로그아웃"
+												 style:UIBarButtonItemStylePlain
+												target:self
+												action:@selector(clickLogout:)] autorelease];
+	}
+	else {
+		item = [[[UIBarButtonItem alloc] initWithTitle:@"로그인"
+												 style:UIBarButtonItemStylePlain
+												target:self
+												action:@selector(clickLogin:)] autorelease];
+	}
+	
+	[self.navigationItem setLeftBarButtonItem:item animated:YES];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+	[super viewDidAppear:animated];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -120,7 +160,8 @@
 	[_activeTopicList release];
 	[_sectionHeaderList release];
     [_forumTableView release];
-	[_connectionIdentifier release];
+//	[_connectionIdentifier release];
+	[_connectionInfo release];
 	[_indicatorView release];
 	[_indicatorItem release];
 	[_refreshButton release];
@@ -132,16 +173,19 @@
 // MARK: -
 // MARK: << Private methods >>
 - (void)clickRefresh:(id)sender {
-	if (self.connectionIdentifier) {
-		[self.networkObject closeConnection:self.connectionIdentifier];
+	if ([self.connectionInfo objectForKey:kOSXDevConnectionInfoKeyReqForum]) {
+		[self.networkObject closeConnection:[self.connectionInfo objectForKey:kOSXDevConnectionInfoKeyReqForum]];
+		[self.connectionInfo removeObjectForKey:kOSXDevConnectionInfoKeyReqForum];
 	}
 	
 	[self.indicatorView startAnimating];
 	[self.navigationItem setRightBarButtonItem:self.indicatorItem animated:YES];
 	
-	self.connectionIdentifier = [self.networkObject forumList];
+	NSString *connectionIdentifier = [self.networkObject forumList];
+	[self.connectionInfo setObject:connectionIdentifier forKey:kOSXDevConnectionInfoKeyReqForum];
 }
 
+/*
 - (void)clickSetting:(id)sender {
 	SettingViewController *viewController = [[[SettingViewController alloc] initWithNibName:nil bundle:nil] autorelease];
 	
@@ -160,6 +204,33 @@
 											 permittedArrowDirections:UIPopoverArrowDirectionUp
 															 animated:YES];
 	}
+}
+ */
+
+- (void)clickLogin:(id)sender {
+	LoginViewController *viewController = [[[LoginViewController alloc] initWithNibName:nil bundle:nil] autorelease];
+	viewController.delegate = self;
+	
+	UINavigationController *navController = [[[UINavigationController alloc] initWithRootViewController:viewController] autorelease];
+	
+	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+		navController.modalPresentationStyle = UIModalPresentationFormSheet;
+	}
+	
+	[self.navigationController presentModalViewController:navController animated:YES];
+}
+
+- (void)clickLogout:(id)sender {
+	[[UserInfo sharedInfo] setUserId:nil];
+	[[UserInfo sharedInfo] setUserPassword:nil];
+	
+	[[UserInfo sharedInfo] logout];
+	
+	UIBarButtonItem *loginButton = [[[UIBarButtonItem alloc] initWithTitle:@"로그인"
+																	 style:UIBarButtonItemStylePlain
+																	target:self
+																	action:@selector(clickLogin:)] autorelease];
+	[self.navigationItem setLeftBarButtonItem:loginButton animated:YES];
 }
 
 // MARK: -
@@ -268,6 +339,28 @@
 }
 
 // MARK: -
+// MARK: << LoginViewControllerDelegate >>
+- (void)loginViewControllerDidFinishLogin:(LoginViewController *)controller {
+	[controller dismissModalViewControllerAnimated:YES];
+	
+	UIBarButtonItem *item = nil;
+	if ([UserInfo sharedInfo].loginStatus == UserInfoLoginStatusLoggedIn) {
+		item = [[[UIBarButtonItem alloc] initWithTitle:@"로그아웃"
+												 style:UIBarButtonItemStylePlain
+												target:self
+												action:@selector(clickLogout:)] autorelease];
+	}
+	else {
+		item = [[[UIBarButtonItem alloc] initWithTitle:@"로그인"
+												 style:UIBarButtonItemStylePlain
+												target:self
+												action:@selector(clickLogin:)] autorelease];
+	}
+	
+	[self.navigationItem setLeftBarButtonItem:item animated:YES];
+}
+
+// MARK: -
 // MARK: << NetworkObjectDelegate >>
 - (void)requestSucceed:(NSData *)data forRequest:(NSString *)connectionIdentifier requestType:(NetworkRequestType)requestType {
 	[SVProgressHUD dismiss];
@@ -291,10 +384,29 @@
 		NSArray *sectionHeaderList = [forumInfo objectForKey:@"topic_header"];
 		self.sectionHeaderList = sectionHeaderList;
 
-		[self.forumTableView reloadData]; 
+		[self.forumTableView reloadData];
+		
+		if ([self.connectionInfo objectForKey:kOSXDevConnectionInfoKeyReqForum]) {
+			[self.connectionInfo removeObjectForKey:kOSXDevConnectionInfoKeyReqForum];
+		}
 	}
-	
-	self.connectionIdentifier = nil;
+	else if (requestType == NetworkRequestLogin) {
+		//settingButton에서 loginButton으로 잠시...
+		UIBarButtonItem *logoutButton = [[[UIBarButtonItem alloc] initWithTitle:@"로그아웃"
+																		  style:UIBarButtonItemStylePlain
+																		 target:self
+																		 action:@selector(clickLogout:)] autorelease];
+		[self.navigationItem setLeftBarButtonItem:logoutButton animated:YES];
+		
+		[[UserInfo sharedInfo] setLoginStatus:UserInfoLoginStatusLoggedIn];
+		
+		if ([self.connectionInfo objectForKey:kOSXDevConnectionInfoKeyReqLogin]) {
+			[self.connectionInfo removeObjectForKey:kOSXDevConnectionInfoKeyReqLogin];
+		}
+	}
+	else {
+		
+	}
 }
 
 - (void)requestFailed:(NSString *)connectionIdentifier requestType:(NetworkRequestType)requestType error:(NSError *)error {
@@ -317,6 +429,27 @@
 			
 			[self.view addSubview:errorLabel];
 		}
+		
+		if ([self.connectionInfo objectForKey:kOSXDevConnectionInfoKeyReqForum]) {
+			[self.connectionInfo removeObjectForKey:kOSXDevConnectionInfoKeyReqForum];
+		}
+	}
+	else if (requestType == NetworkRequestLogin) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"로그인 오류"
+															message:@"로그인에 실패하였습니다.\n좌측 상단 로그인 버튼으로\n재시도 해주세요." 
+														   delegate:self
+												  cancelButtonTitle:@"확인"
+												  otherButtonTitles:nil, nil];
+		
+		[alertView show];
+		[alertView release];
+		
+		if ([self.connectionInfo objectForKey:kOSXDevConnectionInfoKeyReqLogin]) {
+			[self.connectionInfo removeObjectForKey:kOSXDevConnectionInfoKeyReqLogin];
+		}
+	}
+	else {
+		
 	}
 }
 

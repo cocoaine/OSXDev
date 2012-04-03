@@ -26,7 +26,14 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
+	// 시작할 때 쿠키 정리하기.
+	NSHTTPCookie *cookie;
+	NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+	for (cookie in [storage cookies]) {
+		[storage deleteCookie:cookie];
+	}
+	
+	self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
     // Override point for customization after application launch.
 	
 	ForumViewController *viewController = [[[ForumViewController alloc] initWithNibName:nil bundle:nil] autorelease];
