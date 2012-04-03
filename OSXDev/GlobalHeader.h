@@ -13,6 +13,7 @@
 #import "AsyncURLConnection.h"
 #import "HTMLQueryHelper.h"
 #import "SVProgressHUD.h"
+#import "UserInfo.h"
 
 #define kOSXDevTopicMaxCount				25
 #define kOSXDevThreadMaxCount				10

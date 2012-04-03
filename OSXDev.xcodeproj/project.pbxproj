@@ -9,6 +9,11 @@
 /* Begin PBXBuildFile section */
 		991080B615259C52000605C2 /* BrowserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 991080B515259C52000605C2 /* BrowserViewController.m */; };
 		991080C51525B3CA000605C2 /* SettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 991080C41525B3CA000605C2 /* SettingViewController.m */; };
+		9929D5D7152A86BF009A3FE9 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9929D5D6152A86BF009A3FE9 /* LoginViewController.m */; };
+		9929D5DB152A8EB5009A3FE9 /* UserInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 9929D5DA152A8EB5009A3FE9 /* UserInfo.m */; };
+		9929D5E0152AA50E009A3FE9 /* SFHFKeychainUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 9929D5DF152AA50E009A3FE9 /* SFHFKeychainUtils.m */; };
+		9929D5E2152AA543009A3FE9 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9929D5E1152AA543009A3FE9 /* Security.framework */; };
+		9929D5E5152AC117009A3FE9 /* PostingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9929D5E4152AC117009A3FE9 /* PostingViewController.m */; };
 		99352B011521BE6E009D02F9 /* HTMLQueryHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 99352B001521BE6E009D02F9 /* HTMLQueryHelper.m */; };
 		99352B051521C2DD009D02F9 /* ThreadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99352B041521C2DD009D02F9 /* ThreadViewController.m */; };
 		99352B0A1521C32B009D02F9 /* SVProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 99352B071521C32B009D02F9 /* SVProgressHUD.bundle */; };
@@ -46,6 +51,15 @@
 		991080B515259C52000605C2 /* BrowserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BrowserViewController.m; sourceTree = "<group>"; };
 		991080C31525B3CA000605C2 /* SettingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingViewController.h; sourceTree = "<group>"; };
 		991080C41525B3CA000605C2 /* SettingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingViewController.m; sourceTree = "<group>"; };
+		9929D5D5152A86BF009A3FE9 /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
+		9929D5D6152A86BF009A3FE9 /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
+		9929D5D9152A8EB5009A3FE9 /* UserInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserInfo.h; sourceTree = "<group>"; };
+		9929D5DA152A8EB5009A3FE9 /* UserInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserInfo.m; sourceTree = "<group>"; };
+		9929D5DE152AA50E009A3FE9 /* SFHFKeychainUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFHFKeychainUtils.h; sourceTree = "<group>"; };
+		9929D5DF152AA50E009A3FE9 /* SFHFKeychainUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SFHFKeychainUtils.m; sourceTree = "<group>"; };
+		9929D5E1152AA543009A3FE9 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		9929D5E3152AC116009A3FE9 /* PostingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PostingViewController.h; sourceTree = "<group>"; };
+		9929D5E4152AC117009A3FE9 /* PostingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PostingViewController.m; sourceTree = "<group>"; };
 		99352AFF1521BE6E009D02F9 /* HTMLQueryHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTMLQueryHelper.h; sourceTree = "<group>"; };
 		99352B001521BE6E009D02F9 /* HTMLQueryHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HTMLQueryHelper.m; sourceTree = "<group>"; };
 		99352B031521C2DD009D02F9 /* ThreadViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadViewController.h; sourceTree = "<group>"; };
@@ -110,6 +124,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9929D5E2152AA543009A3FE9 /* Security.framework in Frameworks */,
 				99C4BC5D15215D3B00D19A65 /* QuartzCore.framework in Frameworks */,
 				99C4BB9015215BDF00D19A65 /* UIKit.framework in Frameworks */,
 				99C4BB9215215BDF00D19A65 /* Foundation.framework in Frameworks */,
@@ -120,6 +135,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9929D5DC152AA474009A3FE9 /* UserInfo */ = {
+			isa = PBXGroup;
+			children = (
+				9929D5D9152A8EB5009A3FE9 /* UserInfo.h */,
+				9929D5DA152A8EB5009A3FE9 /* UserInfo.m */,
+			);
+			name = UserInfo;
+			sourceTree = "<group>";
+		};
+		9929D5DD152AA50E009A3FE9 /* SFHFKeychainUtils */ = {
+			isa = PBXGroup;
+			children = (
+				9929D5DE152AA50E009A3FE9 /* SFHFKeychainUtils.h */,
+				9929D5DF152AA50E009A3FE9 /* SFHFKeychainUtils.m */,
+			);
+			path = SFHFKeychainUtils;
+			sourceTree = "<group>";
+		};
 		99352B061521C32B009D02F9 /* SVProgressHUD */ = {
 			isa = PBXGroup;
 			children = (
@@ -209,6 +242,7 @@
 		99C4BB8E15215BDF00D19A65 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9929D5E1152AA543009A3FE9 /* Security.framework */,
 				99C4BC5C15215D3B00D19A65 /* QuartzCore.framework */,
 				99C4BB8F15215BDF00D19A65 /* UIKit.framework */,
 				99C4BB9115215BDF00D19A65 /* Foundation.framework */,
@@ -222,8 +256,10 @@
 			children = (
 				99352B32152305D7009D02F9 /* TouchXML */,
 				99352B061521C32B009D02F9 /* SVProgressHUD */,
+				9929D5DD152AA50E009A3FE9 /* SFHFKeychainUtils */,
 				99C4BC9E1521915900D19A65 /* Network */,
 				BFC195751521F45E00C2387E /* HTMLQueryHelper */,
+				9929D5DC152AA474009A3FE9 /* UserInfo */,
 				9982312515254149000E0541 /* GlobalHeader.h */,
 				99C4BB9E15215BDF00D19A65 /* AppDelegate.h */,
 				99C4BB9F15215BDF00D19A65 /* AppDelegate.m */,
@@ -235,6 +271,10 @@
 				99352B041521C2DD009D02F9 /* ThreadViewController.m */,
 				991080B415259C52000605C2 /* BrowserViewController.h */,
 				991080B515259C52000605C2 /* BrowserViewController.m */,
+				9929D5D5152A86BF009A3FE9 /* LoginViewController.h */,
+				9929D5D6152A86BF009A3FE9 /* LoginViewController.m */,
+				9929D5E3152AC116009A3FE9 /* PostingViewController.h */,
+				9929D5E4152AC117009A3FE9 /* PostingViewController.m */,
 				991080C31525B3CA000605C2 /* SettingViewController.h */,
 				991080C41525B3CA000605C2 /* SettingViewController.m */,
 				99C4BB9615215BDF00D19A65 /* Supporting Files */,
@@ -364,6 +404,10 @@
 				99352B5C152305D8009D02F9 /* CTidy.m in Sources */,
 				991080B615259C52000605C2 /* BrowserViewController.m in Sources */,
 				991080C51525B3CA000605C2 /* SettingViewController.m in Sources */,
+				9929D5D7152A86BF009A3FE9 /* LoginViewController.m in Sources */,
+				9929D5DB152A8EB5009A3FE9 /* UserInfo.m in Sources */,
+				9929D5E0152AA50E009A3FE9 /* SFHFKeychainUtils.m in Sources */,
+				9929D5E5152AC117009A3FE9 /* PostingViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -429,8 +473,8 @@
 		99C4BBAD15215BDF00D19A65 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer: J.C. Yang (5K9ZBWN54L)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: J.C. Yang (5K9ZBWN54L)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "OSXDev/OSXDev-Prefix.pch";
 				HEADER_SEARCH_PATHS = "${SDKROOT}/usr/include/libxml2/**";
@@ -439,6 +483,8 @@
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-lxml2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "87A9B35A-ECC1-44A0-BB2D-2DE1F0530017";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "87A9B35A-ECC1-44A0-BB2D-2DE1F0530017";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -446,8 +492,8 @@
 		99C4BBAE15215BDF00D19A65 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer: J.C. Yang (5K9ZBWN54L)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: J.C. Yang (5K9ZBWN54L)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "OSXDev/OSXDev-Prefix.pch";
 				HEADER_SEARCH_PATHS = "${SDKROOT}/usr/include/libxml2/**";
@@ -456,6 +502,8 @@
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-lxml2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "87A9B35A-ECC1-44A0-BB2D-2DE1F0530017";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "87A9B35A-ECC1-44A0-BB2D-2DE1F0530017";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

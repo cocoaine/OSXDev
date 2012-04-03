@@ -8,7 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ForumViewController : UIViewController <UIPopoverControllerDelegate, UITableViewDelegate, UITableViewDataSource, NetworkObjectDelegate>
+#import "LoginViewController.h"
+
+@interface ForumViewController : UIViewController <UIPopoverControllerDelegate, UITableViewDelegate, UITableViewDataSource, 
+LoginViewControllerDelegate, NetworkObjectDelegate>
 
 @property (retain, nonatomic) UITableView *forumTableView;
 @property (retain, nonatomic) NetworkObject *networkObject;

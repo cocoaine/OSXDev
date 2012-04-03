@@ -453,6 +453,8 @@
 			[self.view addSubview:errorLabel];
 		}
 	}
+	
+	self.connectionIdentifier = nil;
 }
 
 @end

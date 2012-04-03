@@ -14,11 +14,12 @@
 #define kOSXDevURLViewTopic			@"viewtopic.php"
 #define kOSXDevURLMemberList		@"memberlist.php"
 #define kOSXDevURLLogin				@"ucp.php"
+#define kOSXDevURLPosting			@"posting.php"
 
-#define kOSXDevXPathMain			@"//div[@id='page-body']/div[@class='forabg']/ul[@class='topiclist forums']/li[@class='row']/dl[@class='icon']/dt"
-#define kOSXDevXPathForumHeaders	@"//li[contains(@class, 'header')]"
+#define kOSXDevXPathMain			@"//div[@id='page-body']/div[@class='forabg']/ul[contains(@class, 'forums')]/li[contains(@class, 'row')]/dl/dt"
+#define kOSXDevXPathForumHeaders	@"//li[contains(@class, 'header')]/dl/dt"
 #define kOSXDevXPathPagination		@"//div[contains(@class, 'pagination')]"
-#define kOSXDevXPathTopicList		@"//dl[contains(@style, 'topic_read')]"
+#define kOSXDevXPathTopicList		@"//dl[contains(@style, 'topic')]"
 #define kOSXDevXPathPostBody		@"//div[contains(@class,'postbody')]"
 
 #define kOSXDevURLRequestTimeout	30.f
@@ -29,6 +30,7 @@ typedef enum _NetworkURLType {
 	NetworkURLTopic			= 2,
 	NetworkURLMember		= 3,
 	NetworkURLLogin			= 4,
+	NetworkURLPosting		= 5,
 } NetworkURLType;
 
 typedef enum _NetworkRequestType {
@@ -37,6 +39,7 @@ typedef enum _NetworkRequestType {
 	NetworkRequestViewTopic		= 2,
 	NetworkRequestViewMember	= 3,
 	NetworkRequestLogin			= 4,
+	NetworkRequestPosting		= 5,
 } NetworkRequestType;
 
 @protocol NetworkObjectDelegate <NSObject>

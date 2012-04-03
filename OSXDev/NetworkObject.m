@@ -10,6 +10,8 @@
 
 #define kMobileSafariUserAgent	@"Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_0 like Mac OS X; en-us) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8A293 Safari/6531.22.7"
 
+#define kOSXDevNotificationLoginSucceed		@"kOSXDevNotificationLoginSucceed"
+
 @interface NetworkObject (PrivateMethods)
 - (BOOL)isValidDelegateForSelector:(SEL)selector;
 - (NSURL *)getURLWithType:(NetworkURLType)urlType parameters:(NSDictionary *)params;
@@ -18,6 +20,7 @@
 - (NSString *)sendRequest:(NSMutableURLRequest *)theRequest 
 			  requestType:(NetworkRequestType)requestType 
 				 isMobile:(BOOL)isMobile;
+- (void)loginSucceedNotificationCalled:(NSNotification *)notification;
 @end
 
 @interface NetworkObject (NSURLConnectionDelegate)
@@ -32,7 +35,6 @@
 
 @synthesize delegate = _delegate;
 @synthesize connections = _connections;
-@synthesize cookies = _cookies;
 @synthesize sid = _sid;
 
 // MARK: -
@@ -42,16 +44,28 @@
     self = [super init];
     if (self) {
         self.delegate = aDelegate;
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+												 selector:@selector(loginSucceedNotificationCalled:) 
+													 name:kOSXDevNotificationLoginSucceed
+												   object:nil];
     }
     return self;
 }
 
 - (void)dealloc
 {
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+													name:kOSXDevNotificationLoginSucceed
+												  object:nil];
+	
     self.delegate = nil;
 	
+	if ([self numberOfConnections] > 0) {
+		[self closeAllConnections];
+	}
+	
 	[_connections release];
-	[_cookies release];
 	[_sid release];
 	
     [super dealloc];
@@ -118,7 +132,7 @@
 	return [self sendRequest:request requestType:NetworkRequestViewTopic isMobile:NO];
 }
 
-- (NSString *)loginWithId:(NSString *)loginId password:(NSString *)password {
+- (NSString *)loginWithAutologin:(BOOL)autoLogin viewonline:(BOOL)viewOnline {
 	NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:1];
 	[params setObject:[NSString stringWithFormat:@"%@", @"login"] forKey:@"mode"];
 	
@@ -129,12 +143,25 @@
 													   timeoutInterval:kOSXDevURLRequestTimeout];
 	
 	NSMutableDictionary *postParams = [NSMutableDictionary dictionaryWithCapacity:0];
-	[postParams setObject:[NSString stringWithFormat:@"%@", loginId] forKey:@"username"];
-	[postParams setObject:[NSString stringWithFormat:@"%@", password] forKey:@"password"];
-//	[postParams setObject:[NSString stringWithFormat:@"%@", @"on"] forKey:@"autologin"];
-//	[postParams setObject:[NSString stringWithFormat:@"%@", @"off"] forKey:@"viewonline"];
+	[postParams setObject:[NSString stringWithFormat:@"%@", [[UserInfo sharedInfo] userId]] forKey:@"username"];
+	[postParams setObject:[NSString stringWithFormat:@"%@", [[UserInfo sharedInfo] userPassword]] forKey:@"password"];
+	[postParams setObject:[NSString stringWithFormat:@"%@", @"7e793737b6a4d0027c590af793a2100c"] forKey:@"sid"]; // 일단 임시로.
+	
+	if (autoLogin) {
+		[postParams setObject:[NSString stringWithFormat:@"%@", @"on"] forKey:@"autologin"];
+	}
+	else {
+		[postParams setObject:[NSString stringWithFormat:@"%@", @"off"] forKey:@"autologin"];
+	}
+	
+	if (viewOnline) {
+		[postParams setObject:[NSString stringWithFormat:@"%@", @"on"] forKey:@"viewonline"];
+	}
+	else {
+		[postParams setObject:[NSString stringWithFormat:@"%@", @"off"] forKey:@"viewonline"];
+	}
+	
 	[postParams setObject:[NSString stringWithFormat:@"%@", @"index.php"] forKey:@"redirect"];
-	[postParams setObject:[NSString stringWithFormat:@"%@", @"e28b8010c5990675ca47d7a71ebb7c7f"] forKey:@"sid"];
 	[postParams setObject:[NSString stringWithFormat:@"로그인"] forKey:@"login"];
 	
 	[request setHTTPMethod:@"POST"];
@@ -171,6 +198,11 @@
 			
 		case NetworkURLLogin:
 			[urlString appendString:kOSXDevURLLogin];
+			break;
+			
+		case NetworkURLPosting:
+			[urlString appendString:kOSXDevURLPosting];
+			break;
 			
 		default:
 			break;
@@ -257,6 +289,21 @@
     return [connection identifier];
 }
 
+- (void)loginSucceedNotificationCalled:(NSNotification *)notification {
+	NSDictionary *loginInfo = notification.userInfo;
+	NSArray *cookies = (NSArray *)[loginInfo objectForKey:@"cookies"];
+	
+	if ([cookies count] > 0) {
+		NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+		for (NSHTTPCookie *cookie in cookies) {
+			[storage setCookie:cookie];
+		}
+	}
+	
+	NSString *sidString = [loginInfo objectForKey:@"sid"];
+	self.sid = sidString;
+}
+
 @end
 
 @implementation NetworkObject (NSURLConnectionDelegate)
@@ -277,14 +324,6 @@
     
     NSHTTPURLResponse *resp = (NSHTTPURLResponse *)response;
     [connection setResponse:resp];
-	
-	// 쿠키 관련 처리
-	NSDictionary *theHeaders = [resp allHeaderFields];
-	NSArray *theCookies = [NSHTTPCookie cookiesWithResponseHeaderFields:theHeaders forURL:[response URL]];
-	
-	if ([theCookies count] > 0) {
-		self.cookies = theCookies;
-	}
     
 	NSHTTPURLResponse *respDebug = (NSHTTPURLResponse *)response;
 	NSLog(@"OSXDev debug : (%ld) [%@]:\r%@", 
@@ -338,6 +377,21 @@
     NSString *connID = [connection identifier];
     NSData *receivedData = [connection data];
     if (receivedData) {
+		if ([connection requestType] == NetworkRequestLogin) {
+			// 쿠키 관련 처리
+			NSDictionary *theHeaders = [[connection response] allHeaderFields];
+			NSArray *cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:theHeaders 
+																	  forURL:[[connection response] URL]];
+			
+			NSString *sidString = [HTMLHelper getSid:receivedData];
+			
+			NSMutableDictionary *loginInfo = [NSMutableDictionary dictionaryWithCapacity:2];
+			[loginInfo setObject:cookies forKey:@"cookies"];
+			[loginInfo setObject:sidString forKey:@"sid"];
+			
+			[[NSNotificationCenter defaultCenter] postNotificationName:kOSXDevNotificationLoginSucceed object:nil userInfo:loginInfo];
+		}
+		
 		if ([self isValidDelegateForSelector:@selector(requestSucceed:forRequest:requestType:)]) {
 			[_delegate requestSucceed:receivedData forRequest:connID requestType:[connection requestType]];
 		}

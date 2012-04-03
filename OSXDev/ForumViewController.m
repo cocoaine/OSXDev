@@ -14,7 +14,8 @@
 
 @interface ForumViewController ()
 - (void)clickRefresh:(id)sender;
-- (void)clickSetting:(id)sender;
+//- (void)clickSetting:(id)sender;
+- (void)clickLogin:(id)sender;
 @end
 
 @implementation ForumViewController
@@ -40,6 +41,13 @@
 	
 	[self.navigationItem setTitle:@"OSXDev"];
 	
+	//settingButton에서 loginButton으로 잠시...
+	UIBarButtonItem *loginButton = [[[UIBarButtonItem alloc] initWithTitle:@"로그인"//@"정보" 
+																	 style:UIBarButtonItemStylePlain
+																	target:self
+																	action:@selector(clickLogin:)] autorelease];
+	[self.navigationItem setLeftBarButtonItem:loginButton animated:YES];
+	
 	UIActivityIndicatorViewStyle indicatorViewStyle;
 	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
 		indicatorViewStyle = UIActivityIndicatorViewStyleWhite;
@@ -47,12 +55,6 @@
 	else {
 		indicatorViewStyle = UIActivityIndicatorViewStyleGray;
 	}
-	
-	UIBarButtonItem *settingButton = [[[UIBarButtonItem alloc] initWithTitle:@"정보" 
-																	   style:UIBarButtonItemStylePlain
-																	  target:self
-																	  action:@selector(clickSetting:)] autorelease];
-	[self.navigationItem setLeftBarButtonItem:settingButton animated:YES];
 	
 	UIActivityIndicatorView *indicatorView = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:indicatorViewStyle] autorelease];
 	indicatorView.hidesWhenStopped = YES;
@@ -142,6 +144,7 @@
 	self.connectionIdentifier = [self.networkObject forumList];
 }
 
+/*
 - (void)clickSetting:(id)sender {
 	SettingViewController *viewController = [[[SettingViewController alloc] initWithNibName:nil bundle:nil] autorelease];
 	
@@ -160,6 +163,18 @@
 											 permittedArrowDirections:UIPopoverArrowDirectionUp
 															 animated:YES];
 	}
+}
+ */
+
+- (void)clickLogin:(id)sender {
+	LoginViewController *viewController = [[[LoginViewController alloc] initWithNibName:nil bundle:nil] autorelease];
+	UINavigationController *navController = [[[UINavigationController alloc] initWithRootViewController:viewController] autorelease];
+	
+	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+		navController.modalPresentationStyle = UIModalPresentationFormSheet;
+	}
+	
+	[self.navigationController presentModalViewController:navController animated:YES];
 }
 
 // MARK: -
@@ -268,6 +283,12 @@
 }
 
 // MARK: -
+// MARK: << LoginViewControllerDelegate >>
+- (void)loginViewControllerDidFinishLogin:(LoginViewController *)controller {
+	
+}
+
+// MARK: -
 // MARK: << NetworkObjectDelegate >>
 - (void)requestSucceed:(NSData *)data forRequest:(NSString *)connectionIdentifier requestType:(NetworkRequestType)requestType {
 	[SVProgressHUD dismiss];
@@ -318,6 +339,8 @@
 			[self.view addSubview:errorLabel];
 		}
 	}
+	
+	self.connectionIdentifier = nil;
 }
 
 @end

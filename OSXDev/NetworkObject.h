@@ -14,7 +14,6 @@
 
 @property (assign, nonatomic) __weak id delegate;
 @property (retain, nonatomic) NSMutableDictionary *connections;
-@property (retain, nonatomic) NSArray *cookies;
 @property (retain, nonatomic) NSString *sid;
 
 - (id)initWithDelegate:(id <NetworkObjectDelegate>)aDelegate;
@@ -29,6 +28,6 @@
 - (NSString *)forumList;
 - (NSString *)topicListWithForumId:(NSInteger)forumId start:(NSInteger)start;
 - (NSString *)threadListWithForumId:(NSInteger)forumId topicId:(NSInteger)topicId start:(NSInteger)start;
-- (NSString *)loginWithId:(NSString *)loginId password:(NSString *)password;
+- (NSString *)loginWithAutologin:(BOOL)autoLogin viewonline:(BOOL)viewOnline;
 
 @end
