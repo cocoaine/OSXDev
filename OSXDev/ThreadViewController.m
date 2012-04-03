@@ -309,7 +309,19 @@
 }
 
 - (void)clickWrite:(id)sender {
+	PostingViewController *viewController = [[[PostingViewController alloc] initWithNibName:nil
+																					 bundle:nil
+																					forumId:self.forumId
+																					topicId:self.topicId] autorelease];
+	viewController.delegate = self;
 	
+	UINavigationController *navController = [[[UINavigationController alloc] initWithRootViewController:viewController] autorelease];
+	
+	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+		navController.modalPresentationStyle = UIModalPresentationFormSheet;
+	}
+	
+	[self.navigationController presentModalViewController:navController animated:YES];
 }
 
 // MARK: -
@@ -366,6 +378,15 @@
 																			start:self.start];
 		}
 	}
+}
+
+// MARK: -
+// MARK: << PostingViewControllerDelegate >>
+- (void)postingViewControllerDidFinishPosting:(PostingViewController *)controller {
+	[controller dismissModalViewControllerAnimated:YES];
+	
+	// 글 다시 불러오기.
+	[self clickRefresh:nil];
 }
 
 // MARK: -

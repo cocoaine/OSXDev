@@ -14,7 +14,6 @@
 
 @property (assign, nonatomic) __weak id delegate;
 @property (retain, nonatomic) NSMutableDictionary *connections;
-@property (retain, nonatomic) NSString *sid;
 
 - (id)initWithDelegate:(id <NetworkObjectDelegate>)aDelegate;
 
@@ -28,6 +27,8 @@
 - (NSString *)forumList;
 - (NSString *)topicListWithForumId:(NSInteger)forumId start:(NSInteger)start;
 - (NSString *)threadListWithForumId:(NSInteger)forumId topicId:(NSInteger)topicId start:(NSInteger)start;
-- (NSString *)loginWithAutologin:(BOOL)autoLogin viewonline:(BOOL)viewOnline;
+- (NSString *)login;
+- (NSString *)postingDataWithForumId:(NSInteger)forumId topicId:(NSInteger)topicId;
+- (NSString *)postingWithSubject:(NSString *)subject message:(NSString *)message forumId:(NSInteger)forumId topicId:(NSInteger)topicId topicCurPostId:(NSString *)topicCurPostId lastClick:(NSString *)lastClick creationTime:(NSString *)creationTime formToken:(NSString *)formToken;
 
 @end

@@ -14,13 +14,21 @@ typedef enum _UserInfoValue {
 	UserInfoYES			= 2,
 } UserInfoValue;
 
+typedef enum _UserInfoLoginStatus {
+	UserInfoLoginStatusNotLoggedIn	= 0,
+	UserInfoLoginStatusLoggedIn		= 1,
+} UserInfoLoginStatus;
+
 @interface UserInfo : NSObject
 
 @property (assign, nonatomic) BOOL autoLogin;
 @property (assign, nonatomic) BOOL viewOnline;
+@property (assign, nonatomic) UserInfoLoginStatus loginStatus;
+@property (retain, nonatomic) NSString *sid;
 
 + (UserInfo *)sharedInfo;
 
+- (void)logout;
 - (NSString *)userId;
 - (NSString *)userPassword;
 - (void)setUserId:(NSString *)userId;

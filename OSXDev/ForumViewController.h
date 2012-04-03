@@ -18,7 +18,8 @@ LoginViewControllerDelegate, NetworkObjectDelegate>
 @property (retain, nonatomic) NSArray *forumList;
 @property (retain, nonatomic) NSArray *activeTopicList;
 @property (retain, nonatomic) NSArray *sectionHeaderList;
-@property (retain, nonatomic) NSString *connectionIdentifier;
+//@property (retain, nonatomic) NSString *connectionIdentifier;
+@property (retain, nonatomic) NSMutableDictionary *connectionInfo;
 
 @property (retain, nonatomic) UIActivityIndicatorView *indicatorView;
 @property (retain, nonatomic) UIBarButtonItem *indicatorItem;

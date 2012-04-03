@@ -9,7 +9,9 @@
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 
-@interface ThreadViewController : UIViewController <UIWebViewDelegate, UIAlertViewDelegate, NetworkObjectDelegate>
+#import "PostingViewController.h"
+
+@interface ThreadViewController : UIViewController <UIWebViewDelegate, UIAlertViewDelegate, NetworkObjectDelegate, PostingViewControllerDelegate>
 
 @property (retain, nonatomic) UIWebView *detailWebView;
 @property (retain, nonatomic) UIActivityIndicatorView *indicatorView;

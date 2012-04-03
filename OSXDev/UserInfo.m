@@ -20,6 +20,8 @@
 
 @synthesize autoLogin = _autoLogin;
 @synthesize viewOnline = _viewOnline;
+@synthesize loginStatus = _loginStatus;
+@synthesize sid = _sid;
 
 static UserInfo *sharedInfo = nil;
 
@@ -27,6 +29,8 @@ static UserInfo *sharedInfo = nil;
 {
     self = [super init];
     if (self) {
+		self.loginStatus = UserInfoLoginStatusNotLoggedIn;
+		
 		NSInteger tmpAutoLogin = [[NSUserDefaults standardUserDefaults] integerForKey:kOSXDevUserInfoKeyAutoLogin];
 		switch (tmpAutoLogin) {
 			case UserInfoDefault:
@@ -102,6 +106,8 @@ static UserInfo *sharedInfo = nil;
 
 - (void)dealloc
 {
+	[_sid release];
+	
     [super dealloc];
 }
 
@@ -119,6 +125,21 @@ static UserInfo *sharedInfo = nil;
 
 // MARK: -
 // MARK: << Public methods >>
+- (void)logout {
+	NSHTTPCookie *cookie;
+	NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+	for (cookie in [storage cookies]) {
+		[storage deleteCookie:cookie];
+	}
+
+	self.sid = nil;
+	self.loginStatus = UserInfoLoginStatusNotLoggedIn;
+
+	[[NSNotificationCenter defaultCenter] postNotificationName:kOSXDevNotificationLoginSucceed
+														object:nil
+													  userInfo:nil];
+}
+
 - (void)setAutoLogin:(BOOL)autoLogin {
 	_autoLogin = autoLogin;
 	

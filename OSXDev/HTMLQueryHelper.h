@@ -13,7 +13,8 @@
 + (NSDictionary *)convertForumInfo:(NSData *)htmlData;
 + (NSDictionary *)convertTopicInfo:(NSData *)htmlData;
 + (NSDictionary *)convertThreadInfo:(NSData *)htmlData;
-+ (NSString *)getSid:(NSData *)htmlData;
++ (NSDictionary *)convertPostingInfo:(NSData *)htmlData;
++ (NSString *)getSid:(NSData *)htmlData;;
 
 @end
 

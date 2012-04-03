@@ -271,6 +271,78 @@
 	return threadInfo;
 }
 
++ (NSDictionary *)convertPostingInfo:(NSData *)htmlData {
+	NSMutableDictionary *postingInfo = [NSMutableDictionary dictionaryWithCapacity:0];
+	
+    CXMLDocument *htmlParser = [[[CXHTMLDocument alloc] initWithXHTMLData:htmlData
+																 encoding:NSUTF8StringEncoding
+																  options:0
+																	error:nil] autorelease];
+	
+	NSString *subject = nil;
+	NSString *topicCurPostId = nil;
+	NSString *lastClick = nil;
+	NSString *creationTime = nil;
+	NSString *formToken = nil;
+	
+	NSArray *resultNodes = [htmlParser nodesForXPath:kOSXDevXPathTopicCurPostId error:nil];
+	if ([resultNodes count] != 0) {
+		for (CXMLElement *element in resultNodes) {
+			topicCurPostId = [[element attributeForName:@"value"] stringValue];
+		}
+	}
+	
+	resultNodes = [htmlParser nodesForXPath:kOSXDevXPathLastClick error:nil];
+	if ([resultNodes count] != 0) {
+		for (CXMLElement *element in resultNodes) {
+			lastClick = [[element attributeForName:@"value"] stringValue];
+		}
+	}
+	
+	resultNodes = [htmlParser nodesForXPath:kOSXDevXPathCreationTime error:nil];
+	if ([resultNodes count] != 0) {
+		for (CXMLElement *element in resultNodes) {
+			creationTime = [[element attributeForName:@"value"] stringValue];
+		}
+	}
+	
+	resultNodes = [htmlParser nodesForXPath:kOSXDevXPathFormToken error:nil];
+	if ([resultNodes count] != 0) {
+		for (CXMLElement *element in resultNodes) {
+			formToken = [[element attributeForName:@"value"] stringValue];
+		}
+	}
+	
+	resultNodes = [htmlParser nodesForXPath:kOSXDevXPathPostingSubject error:nil];
+	if ([resultNodes count] != 0) {
+		for (CXMLElement *element in resultNodes) {
+			subject = [[element attributeForName:@"value"] stringValue];
+		}
+	}
+	
+	if (subject) {
+		[postingInfo setObject:subject forKey:@"subject"];
+	}
+	
+	if (topicCurPostId) {
+		[postingInfo setObject:topicCurPostId forKey:@"topic_cur_post_id"];
+	}
+	
+	if (lastClick) {
+		[postingInfo setObject:lastClick forKey:@"lastclick"];
+	}
+	
+	if (creationTime) {
+		[postingInfo setObject:creationTime forKey:@"creation_time"];
+	}
+	
+	if (formToken) {
+		[postingInfo setObject:formToken forKey:@"form_token"];
+	}
+	
+	return postingInfo;
+}
+
 + (NSString *)getSid:(NSData *)htmlData {
 	CXMLDocument *htmlParser = [[[CXHTMLDocument alloc] initWithXHTMLData:htmlData
 																 encoding:NSUTF8StringEncoding

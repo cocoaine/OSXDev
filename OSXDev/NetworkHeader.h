@@ -21,6 +21,11 @@
 #define kOSXDevXPathPagination		@"//div[contains(@class, 'pagination')]"
 #define kOSXDevXPathTopicList		@"//dl[contains(@style, 'topic')]"
 #define kOSXDevXPathPostBody		@"//div[contains(@class,'postbody')]"
+#define kOSXDevXPathPostingSubject	@"//input[contains(@name, 'subject')]"
+#define kOSXDevXPathTopicCurPostId	@"//input[contains(@name, 'topic_cur_post_id')]"
+#define kOSXDevXPathLastClick		@"//input[contains(@name, 'lastclick')]"
+#define kOSXDevXPathCreationTime	@"//input[contains(@name, 'creation_time')]"
+#define kOSXDevXPathFormToken		@"//input[contains(@name, 'form_token')]"
 
 #define kOSXDevURLRequestTimeout	30.f
 
@@ -30,7 +35,8 @@ typedef enum _NetworkURLType {
 	NetworkURLTopic			= 2,
 	NetworkURLMember		= 3,
 	NetworkURLLogin			= 4,
-	NetworkURLPosting		= 5,
+	NetworkURLPostingData	= 5,
+	NetworkURLPosting		= 6,
 } NetworkURLType;
 
 typedef enum _NetworkRequestType {
@@ -39,7 +45,8 @@ typedef enum _NetworkRequestType {
 	NetworkRequestViewTopic		= 2,
 	NetworkRequestViewMember	= 3,
 	NetworkRequestLogin			= 4,
-	NetworkRequestPosting		= 5,
+	NetworkRequestPostingData	= 5,
+	NetworkRequestPosting		= 6,
 } NetworkRequestType;
 
 @protocol NetworkObjectDelegate <NSObject>

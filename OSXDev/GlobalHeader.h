@@ -22,6 +22,8 @@
 
 #define kOSXDevURLPrefix					@"http://www.osxdev.org/phpBB3/"
 
+#define kOSXDevNotificationLoginSucceed		@"kOSXDevNotificationLoginSucceed"
+
 #define UIViewAutoresizingFlexibleAll		(UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth)
 
 #endif

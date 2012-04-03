@@ -8,7 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface TopicViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate, NetworkObjectDelegate>
+#import "PostingViewController.h"
+
+@interface TopicViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate, NetworkObjectDelegate, PostingViewControllerDelegate>
 
 @property (retain, nonatomic) UITableView *topicTableView;
 @property (retain, nonatomic) UIActivityIndicatorView *indicatorView;

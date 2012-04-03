@@ -26,15 +26,14 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-	// 로그인을 위해, 시작시마다 쿠키를 정리한다.
+	// 시작할 때 쿠키 정리하기.
 	NSHTTPCookie *cookie;
 	NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
 	for (cookie in [storage cookies]) {
-		NSLog(@"cookie : %@", cookie);
 		[storage deleteCookie:cookie];
 	}
 	
-    self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
+	self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
     // Override point for customization after application launch.
 	
 	ForumViewController *viewController = [[[ForumViewController alloc] initWithNibName:nil bundle:nil] autorelease];

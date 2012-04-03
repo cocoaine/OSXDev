@@ -33,6 +33,9 @@
         // Custom initialization
 		
 		[self.navigationItem setTitle:@"로그인"];
+		
+		NetworkObject *networkObject = [[[NetworkObject alloc] initWithDelegate:self] autorelease];
+		self.networkObject = networkObject;
     }
     return self;
 }
@@ -46,9 +49,6 @@
 																				   target:self
 																				   action:@selector(clickCancel:)] autorelease];
 	[self.navigationItem setLeftBarButtonItem:cancelButton animated:YES];
-	
-	NetworkObject *networkObject = [[[NetworkObject alloc] initWithDelegate:self] autorelease];
-	self.networkObject = networkObject;
 	
 	UITableView *tableView = [[[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped] autorelease];
 	tableView.autoresizingMask = UIViewAutoresizingFlexibleAll;
@@ -107,6 +107,9 @@
 // MARK: -
 // MARK: << Private methods >>
 - (void)clickCancel:(id)sender {
+	[[UserInfo sharedInfo] setUserId:nil];
+	[[UserInfo sharedInfo] setUserPassword:nil];
+	
 	[self.navigationController dismissModalViewControllerAnimated:YES];
 }
 
@@ -122,8 +125,7 @@
 	}
 	
 	[SVProgressHUD showInView:self.view status:@"로그인 중..."];
-	self.connectionIdentifier = [self.networkObject loginWithAutologin:self.autoLoginSwitch.on
-															viewonline:self.viewOnlineSwitch.on];
+	self.connectionIdentifier = [self.networkObject login];
 }
 
 - (void)autoLoginValueChanged:(id)sender {
@@ -290,10 +292,6 @@
 
 // MARK: -
 // MARK: << UITextFieldDelegate >>
-- (void)textFieldDidBeginEditing:(UITextField *)textField {
-	
-}
-
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
 	if (textField == self.idTextField) {
 		[self.pwTextField becomeFirstResponder];
@@ -313,35 +311,27 @@
 - (void)requestSucceed:(NSData *)data forRequest:(NSString *)connectionIdentifier requestType:(NetworkRequestType)requestType {
 	[SVProgressHUD dismiss];
 	
-	if ([self.view viewWithTag:kOSXDevErrorLabelTag]) {
-		[(UIView *)[self.view viewWithTag:kOSXDevErrorLabelTag] removeFromSuperview];
-	}
-	
 	if (requestType == NetworkRequestLogin) {
-//		NSLog(@"data : %@", [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease]);
+		[[UserInfo sharedInfo] setLoginStatus:UserInfoLoginStatusLoggedIn];
+		
+		if (self.delegate) {
+			[self.delegate loginViewControllerDidFinishLogin:self];
+		}
 	}
 	
 	self.connectionIdentifier = nil;
 }
 
 - (void)requestFailed:(NSString *)connectionIdentifier requestType:(NetworkRequestType)requestType error:(NSError *)error {
-	[SVProgressHUD dismiss];
-	
-	if ([self.view viewWithTag:kOSXDevErrorLabelTag] == nil) {
-		UILabel *errorLabel = [[[UILabel alloc] initWithFrame:self.view.bounds] autorelease];
-		errorLabel.autoresizingMask = UIViewAutoresizingFlexibleAll;
-		errorLabel.textAlignment = UITextAlignmentCenter;
-		errorLabel.backgroundColor = [UIColor whiteColor];
-		errorLabel.textColor = [UIColor grayColor];
-		errorLabel.font = [UIFont boldSystemFontOfSize:18.f];
-		errorLabel.tag = kOSXDevErrorLabelTag;
-		errorLabel.numberOfLines = 0;
+	if (requestType == NetworkRequestLogin) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"로그인 오류"
+															message:@"로그인에 실패하였습니다.\n잠시 후에 다시 시도해주세요." 
+														   delegate:self
+												  cancelButtonTitle:@"확인"
+												  otherButtonTitles:nil, nil];
 		
-		if (requestType == NetworkRequestLogin) {
-			errorLabel.text = @"로그인에 실패하였습니다.\n아이디와 패스워드 확인 후\n다시 시도해주세요.";
-		}
-		
-		[self.view addSubview:errorLabel];
+		[alertView show];
+		[alertView release];
 	}
 	
 	self.connectionIdentifier = nil;

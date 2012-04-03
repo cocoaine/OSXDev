@@ -8,19 +8,20 @@
 
 #import "NetworkObject.h"
 
-#define kMobileSafariUserAgent	@"Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_0 like Mac OS X; en-us) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8A293 Safari/6531.22.7"
-
-#define kOSXDevNotificationLoginSucceed		@"kOSXDevNotificationLoginSucceed"
+#define kMobileSafariUserAgent		@"Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_0 like Mac OS X; en-us) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8A293 Safari/6531.22.7"
+#define kOSXDevMultipartBoundary	@"0xKhTmLbOuNdArY"
 
 @interface NetworkObject (PrivateMethods)
 - (BOOL)isValidDelegateForSelector:(SEL)selector;
 - (NSURL *)getURLWithType:(NetworkURLType)urlType parameters:(NSDictionary *)params;
 - (NSString *)encodeURL:(NSString *)string;
 - (NSData *)setPostBody:(NSDictionary *)postParams;
+- (NSData *)setMultipartBody:(NSDictionary *)postParams;
 - (NSString *)sendRequest:(NSMutableURLRequest *)theRequest 
 			  requestType:(NetworkRequestType)requestType 
 				 isMobile:(BOOL)isMobile;
 - (void)loginSucceedNotificationCalled:(NSNotification *)notification;
+- (void)cookieChangedNotificationCalled:(NSNotification *)notification;
 @end
 
 @interface NetworkObject (NSURLConnectionDelegate)
@@ -35,7 +36,6 @@
 
 @synthesize delegate = _delegate;
 @synthesize connections = _connections;
-@synthesize sid = _sid;
 
 // MARK: -
 // MARK: << Default methods >>
@@ -49,6 +49,11 @@
 												 selector:@selector(loginSucceedNotificationCalled:) 
 													 name:kOSXDevNotificationLoginSucceed
 												   object:nil];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+												 selector:@selector(cookieChangedNotificationCalled:)
+													 name:NSHTTPCookieManagerCookiesChangedNotification
+												   object:nil];
     }
     return self;
 }
@@ -59,6 +64,10 @@
 													name:kOSXDevNotificationLoginSucceed
 												  object:nil];
 	
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+													name:NSHTTPCookieManagerCookiesChangedNotification
+												  object:nil];
+	
     self.delegate = nil;
 	
 	if ([self numberOfConnections] > 0) {
@@ -66,7 +75,6 @@
 	}
 	
 	[_connections release];
-	[_sid release];
 	
     [super dealloc];
 }
@@ -132,7 +140,7 @@
 	return [self sendRequest:request requestType:NetworkRequestViewTopic isMobile:NO];
 }
 
-- (NSString *)loginWithAutologin:(BOOL)autoLogin viewonline:(BOOL)viewOnline {
+- (NSString *)login {
 	NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:1];
 	[params setObject:[NSString stringWithFormat:@"%@", @"login"] forKey:@"mode"];
 	
@@ -145,16 +153,16 @@
 	NSMutableDictionary *postParams = [NSMutableDictionary dictionaryWithCapacity:0];
 	[postParams setObject:[NSString stringWithFormat:@"%@", [[UserInfo sharedInfo] userId]] forKey:@"username"];
 	[postParams setObject:[NSString stringWithFormat:@"%@", [[UserInfo sharedInfo] userPassword]] forKey:@"password"];
-	[postParams setObject:[NSString stringWithFormat:@"%@", @"7e793737b6a4d0027c590af793a2100c"] forKey:@"sid"]; // 일단 임시로.
+//	[postParams setObject:[NSString stringWithFormat:@"%@", @"7e793737b6a4d0027c590af793a2100c"] forKey:@"sid"]; // 일단 임시로.
 	
-	if (autoLogin) {
+	if ([UserInfo sharedInfo].autoLogin) {
 		[postParams setObject:[NSString stringWithFormat:@"%@", @"on"] forKey:@"autologin"];
 	}
 	else {
 		[postParams setObject:[NSString stringWithFormat:@"%@", @"off"] forKey:@"autologin"];
 	}
 	
-	if (viewOnline) {
+	if ([UserInfo sharedInfo].viewOnline) {
 		[postParams setObject:[NSString stringWithFormat:@"%@", @"on"] forKey:@"viewonline"];
 	}
 	else {
@@ -168,6 +176,80 @@
 	[request setHTTPBody:[self setPostBody:postParams]];
 	
 	return [self sendRequest:request requestType:NetworkRequestLogin isMobile:YES];
+}
+
+- (NSString *)postingDataWithForumId:(NSInteger)forumId topicId:(NSInteger)topicId {
+	NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:1];
+	
+	if (topicId == -1) {
+		// topic id가 -1이면 new post
+		[params setObject:[NSString stringWithFormat:@"%@", @"post"] forKey:@"mode"];
+	}
+	else {
+		// reply
+		[params setObject:[NSString stringWithFormat:@"%@", @"reply"] forKey:@"mode"];
+		[params setObject:[NSString stringWithFormat:@"%d", topicId] forKey:@"t"];
+	}
+	
+	[params setObject:[NSString stringWithFormat:@"%d", forumId] forKey:@"f"];
+	
+	NSURL *url = [self getURLWithType:NetworkURLPostingData parameters:params];
+	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
+														   cachePolicy:NSURLRequestUseProtocolCachePolicy
+													   timeoutInterval:kOSXDevURLRequestTimeout];
+	
+	return [self sendRequest:request requestType:NetworkRequestPostingData isMobile:NO];
+}
+
+- (NSString *)postingWithSubject:(NSString *)subject message:(NSString *)message forumId:(NSInteger)forumId topicId:(NSInteger)topicId topicCurPostId:(NSString *)topicCurPostId lastClick:(NSString *)lastClick creationTime:(NSString *)creationTime formToken:(NSString *)formToken {
+	NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:1];
+	
+	if (topicId == -1) {
+		// topic id가 -1이면 new post
+		[params setObject:[NSString stringWithFormat:@"%@", @"post"] forKey:@"mode"];
+	}
+	else {
+		// reply
+		[params setObject:[NSString stringWithFormat:@"%@", @"reply"] forKey:@"mode"];
+		[params setObject:[NSString stringWithFormat:@"%d", topicId] forKey:@"t"];
+	}
+	
+	[params setObject:[NSString stringWithFormat:@"%d", forumId] forKey:@"f"];
+	
+	NSURL *url = [self getURLWithType:NetworkURLPosting parameters:params];
+	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
+														   cachePolicy:NSURLRequestUseProtocolCachePolicy
+													   timeoutInterval:kOSXDevURLRequestTimeout];
+	
+	NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", kOSXDevMultipartBoundary];
+	[request addValue:contentType forHTTPHeaderField:@"Content-Type"];
+	
+	NSMutableDictionary *postParams = [NSMutableDictionary dictionaryWithCapacity:0];
+	[postParams setObject:[NSString stringWithFormat:@"%d", 0] forKey:@"icon"];
+	[postParams setObject:[NSString stringWithFormat:@"%@", subject] forKey:@"subject"];
+	[postParams setObject:[NSString stringWithFormat:@"%d", 100] forKey:@"addbbcode20"];
+	[postParams setObject:[NSString stringWithFormat:@"%@", message] forKey:@"message"];
+	[postParams setObject:[NSString stringWithFormat:@"%@", @"마침"] forKey:@"post"];
+	[postParams setObject:[NSString stringWithFormat:@"%@", @"off"] forKey:@"attach_sig"];
+	[postParams setObject:[NSString stringWithFormat:@"%@", @""] forKey:@"fileupload"];
+	[postParams setObject:[NSString stringWithFormat:@"%@", @""] forKey:@"filecomment"];
+	
+	if (topicCurPostId) {
+		[postParams setObject:[NSString stringWithFormat:@"%@", topicCurPostId] forKey:@"topic_cur_post_id"];
+	}
+	
+	[postParams setObject:[NSString stringWithFormat:@"%@", lastClick] forKey:@"lastclick"];
+	[postParams setObject:[NSString stringWithFormat:@"%@", creationTime] forKey:@"creation_time"];
+	[postParams setObject:[NSString stringWithFormat:@"%@", formToken] forKey:@"form_token"];
+	
+	[request setHTTPMethod:@"POST"];
+	
+	NSData *bodyData = [self setMultipartBody:postParams];
+	[request setHTTPBody:bodyData];
+	
+//	NSLog(@"bodyData : %@", [[[NSString alloc] initWithData:bodyData encoding:NSUTF8StringEncoding] autorelease]);
+	
+	return [self sendRequest:request requestType:NetworkRequestPosting isMobile:NO];
 }
 
 @end
@@ -201,6 +283,7 @@
 			break;
 			
 		case NetworkURLPosting:
+		case NetworkURLPostingData:
 			[urlString appendString:kOSXDevURLPosting];
 			break;
 			
@@ -226,11 +309,11 @@
 		}
 	}
 	
-	NSLog(@"urlString : %@", urlString);
-	
-	if (self.sid != nil) {
-		[urlString appendFormat:@"%@=%@", @"sid", self.sid];
+	if ([UserInfo sharedInfo].sid != nil) {
+		[urlString appendFormat:@"&%@=%@", @"sid", [UserInfo sharedInfo].sid];
 	}
+	
+//	NSLog(@"urlString : %@", urlString);
 	
 	return [NSURL URLWithString:urlString];
 }
@@ -263,8 +346,44 @@
 		}
 	}
 	
+	NSLog(@"postString : %@", postString);
+	
 	NSData *requestData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
 	return requestData;
+}
+
+- (NSData *)setMultipartBody:(NSDictionary *)postParams {
+	NSArray *keys = [postParams allKeys];
+	
+	NSMutableData *body = [NSMutableData data];
+	[body appendData:[[NSString stringWithFormat:@"--%@\r\n", kOSXDevMultipartBoundary] dataUsingEncoding:NSUTF8StringEncoding]];
+	
+	for (NSInteger i = 0; i < [keys count]; i++) {
+		NSString *key = [keys objectAtIndex:i];
+		NSString *value = [postParams objectForKey:key];
+		
+		if ([key isEqualToString:@"fileupload"]) {
+			[body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"%@\"\r\n", @"fileupload", @""] dataUsingEncoding:NSUTF8StringEncoding]];
+			[body appendData:[[NSString stringWithFormat:@"Content-Type: application/octet-stream\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+			
+//			UIImage *image = (UIImage *)[postParams objectForKey:key];
+//			NSData *imageData = UIImagePNGRepresentation(image);
+//			[body appendData:[[NSString stringWithFormat:@"%@", imageData] dataUsingEncoding:NSUTF8StringEncoding]];
+		}
+		else {
+			[body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", key] dataUsingEncoding:NSUTF8StringEncoding]];
+			[body appendData:[[NSString stringWithFormat:@"%@", value] dataUsingEncoding:NSUTF8StringEncoding]];
+		}
+		
+		if (i == [keys count] - 1) {
+			[body appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n", kOSXDevMultipartBoundary] dataUsingEncoding:NSUTF8StringEncoding]];
+		}
+		else {
+			[body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", kOSXDevMultipartBoundary] dataUsingEncoding:NSUTF8StringEncoding]];
+		}
+	}
+	
+	return body;
 }
 
 - (NSString *)sendRequest:(NSMutableURLRequest *)theRequest 
@@ -291,17 +410,22 @@
 
 - (void)loginSucceedNotificationCalled:(NSNotification *)notification {
 	NSDictionary *loginInfo = notification.userInfo;
-	NSArray *cookies = (NSArray *)[loginInfo objectForKey:@"cookies"];
-	
-	if ([cookies count] > 0) {
-		NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-		for (NSHTTPCookie *cookie in cookies) {
-			[storage setCookie:cookie];
-		}
-	}
 	
 	NSString *sidString = [loginInfo objectForKey:@"sid"];
-	self.sid = sidString;
+	if (sidString == nil) {
+		[UserInfo sharedInfo].sid = nil;
+	}
+	else {
+		[UserInfo sharedInfo].sid = sidString;
+	}
+}
+
+- (void)cookieChangedNotificationCalled:(NSNotification *)notification {
+	NSLog(@"NSHTTPCookieManagerCookiesChangedNotification called");
+	
+	for (NSHTTPCookie *cookie in [NSHTTPCookieStorage sharedHTTPCookieStorage].cookies) {
+		NSLog(@"changed cookie : %@", [cookie value]);
+	}
 }
 
 @end
@@ -378,15 +502,10 @@
     NSData *receivedData = [connection data];
     if (receivedData) {
 		if ([connection requestType] == NetworkRequestLogin) {
-			// 쿠키 관련 처리
-			NSDictionary *theHeaders = [[connection response] allHeaderFields];
-			NSArray *cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:theHeaders 
-																	  forURL:[[connection response] URL]];
-			
+			// 로그인 처리
 			NSString *sidString = [HTMLHelper getSid:receivedData];
 			
-			NSMutableDictionary *loginInfo = [NSMutableDictionary dictionaryWithCapacity:2];
-			[loginInfo setObject:cookies forKey:@"cookies"];
+			NSMutableDictionary *loginInfo = [NSMutableDictionary dictionaryWithCapacity:1];
 			[loginInfo setObject:sidString forKey:@"sid"];
 			
 			[[NSNotificationCenter defaultCenter] postNotificationName:kOSXDevNotificationLoginSucceed object:nil userInfo:loginInfo];
