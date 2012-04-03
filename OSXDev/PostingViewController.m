@@ -190,8 +190,6 @@
 									   reuseIdentifier:cellIdentifier] autorelease];
     }
 	
-	NSLog(@"self.postingTableView.bounds.size.width : %f", self.postingTableView.bounds.size.width);
-	
 	switch (indexPath.row) {
 		case 0:
 		{
@@ -199,11 +197,11 @@
 				CGRect textFieldRect = CGRectZero;
 				textFieldRect.origin.x = 0.f;
 				textFieldRect.origin.y = 0.f;
-				textFieldRect.size.width = self.postingTableView.bounds.size.width - 20.f;
+				textFieldRect.size.width = self.view.bounds.size.width - 20.f;
 				textFieldRect.size.height = 20.f;
 				
 				UITextField *textField = [[[UITextField alloc] initWithFrame:textFieldRect] autorelease];
-				textField.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin);
+				textField.autoresizingMask = UIViewAutoresizingFlexibleAll;
 				textField.backgroundColor = [UIColor clearColor];
 				textField.textColor = [UIColor blackColor];
 				textField.delegate = self;
@@ -225,15 +223,15 @@
 				CGRect textViewdRect = CGRectZero;
 				textViewdRect.origin.x = 0.f;
 				textViewdRect.origin.y = 0.f;
-				textViewdRect.size.width = self.postingTableView.bounds.size.width;
+				textViewdRect.size.width = self.view.bounds.size.width - 20.f;
 				textViewdRect.size.height = self.postingTableView.bounds.size.height;
 				
 				UITextView *textView = [[[UITextView alloc] initWithFrame:textViewdRect] autorelease];
-				textView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin);
+				textView.autoresizingMask = UIViewAutoresizingFlexibleAll;
 				textView.backgroundColor = [UIColor clearColor];
 				textView.textColor = [UIColor blackColor];
 				textView.delegate = self;
-				textView.font = [UIFont systemFontOfSize:15.f];
+				textView.font = [UIFont systemFontOfSize:16.f];
 				
 				textView.returnKeyType = UIReturnKeyDone;
 				
