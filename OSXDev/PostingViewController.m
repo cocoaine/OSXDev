@@ -82,7 +82,7 @@
 	
 	UITextField *textField = [[[UITextField alloc] initWithFrame:frameRect] autorelease];
 	textField.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleWidth);
-	textField.backgroundColor = [UIColor whiteColor];
+	textField.backgroundColor = [UIColor clearColor];
 	textField.textColor = [UIColor blackColor];
 	textField.delegate = self;
 	textField.font = [UIFont boldSystemFontOfSize:18.f];
@@ -106,7 +106,7 @@
 	textView.delegate = self;
 	textView.font = [UIFont systemFontOfSize:16.f];
 	
-	textView.returnKeyType = UIReturnKeyDone;
+	textView.returnKeyType = UIReturnKeyDefault;
 	
 	frameRect.origin.x = 0.f;
 	frameRect.size.height = 1.f;
@@ -263,7 +263,12 @@
 	CGRect frame = self.contentView.frame;
 	
 	if (isON) {
-		frame.size.height -= bounds.size.height;
+		if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+			frame.size.height -= bounds.size.height;
+		}
+		else {
+			frame.size.height -= (bounds.size.height - 140.f);
+		}
 	}
 	else {
 		frame = self.contentFrame;
