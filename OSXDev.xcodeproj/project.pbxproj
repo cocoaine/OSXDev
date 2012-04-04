@@ -473,8 +473,8 @@
 		99C4BBAD15215BDF00D19A65 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer: J.C. Yang (5K9ZBWN54L)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: J.C. Yang (5K9ZBWN54L)";
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "OSXDev/OSXDev-Prefix.pch";
 				HEADER_SEARCH_PATHS = "${SDKROOT}/usr/include/libxml2/**";
@@ -483,8 +483,6 @@
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-lxml2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "87A9B35A-ECC1-44A0-BB2D-2DE1F0530017";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "87A9B35A-ECC1-44A0-BB2D-2DE1F0530017";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -492,8 +490,8 @@
 		99C4BBAE15215BDF00D19A65 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer: J.C. Yang (5K9ZBWN54L)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: J.C. Yang (5K9ZBWN54L)";
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "OSXDev/OSXDev-Prefix.pch";
 				HEADER_SEARCH_PATHS = "${SDKROOT}/usr/include/libxml2/**";
@@ -502,8 +500,6 @@
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-lxml2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "87A9B35A-ECC1-44A0-BB2D-2DE1F0530017";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "87A9B35A-ECC1-44A0-BB2D-2DE1F0530017";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
