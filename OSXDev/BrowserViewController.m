@@ -233,6 +233,9 @@
 	[self.navigationItem setRightBarButtonItem:nil animated:YES];
 	[self.indicatorView stopAnimating];
 	
+	NSArray *items = [NSArray arrayWithObjects:self.prevPageItem, self.blankSpace, self.nextPageItem, self.blankSpace, self.refreshPageItem, self.blankSpace, self.externalLinkItem, nil];
+	[self setToolbarItems:items animated:YES];
+	
 	if (self.browserWebView.canGoBack) {
 		[self.prevPageItem setEnabled:YES];
 	}
@@ -254,6 +257,9 @@
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
 	[self.navigationItem setRightBarButtonItem:nil animated:YES];
 	[self.indicatorView stopAnimating];
+	
+	NSArray *items = [NSArray arrayWithObjects:self.prevPageItem, self.blankSpace, self.nextPageItem, self.blankSpace, self.refreshPageItem, self.blankSpace, self.externalLinkItem, nil];
+	[self setToolbarItems:items animated:YES];
 	
 	if (self.browserWebView.canGoBack) {
 		[self.prevPageItem setEnabled:YES];
