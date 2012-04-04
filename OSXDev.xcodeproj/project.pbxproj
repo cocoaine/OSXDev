@@ -342,7 +342,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0430;
-				ORGANIZATIONNAME = BRID;
+				ORGANIZATIONNAME = "Cocoaine team";
 			};
 			buildConfigurationList = 99C4BB8515215BDF00D19A65 /* Build configuration list for PBXProject "OSXDev" */;
 			compatibilityVersion = "Xcode 3.2";

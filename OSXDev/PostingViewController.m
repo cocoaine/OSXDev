@@ -3,7 +3,7 @@
 //  OSXDev
 //
 //  Created by J.C. Yang on 12. 4. 3..
-//  Copyright (c) 2012년 BRID. All rights reserved.
+//  Copyright (c) 2012년 Cocoaine team. All rights reserved.
 //
 
 #import "PostingViewController.h"
