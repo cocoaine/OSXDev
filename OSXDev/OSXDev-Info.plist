@@ -51,7 +51,7 @@
 				<string>icon@2x.png</string>
 			</array>
 			<key>UIPrerenderedIcon</key>
-			<false/>
+			<true/>
 		</dict>
 		<key>UINewsstandIcon</key>
 		<dict>
@@ -71,6 +71,6 @@
 		<string>icon@2x.png</string>
 	</array>
 	<key>UIPrerenderedIcon</key>
-	<false/>
+	<true/>
 </dict>
 </plist>
