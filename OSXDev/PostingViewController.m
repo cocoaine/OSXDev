@@ -77,7 +77,7 @@
 	UIBarButtonItem *cancelButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
 																				   target:self
 																				   action:@selector(clickCancel:)] autorelease];
-	[self.navigationItem setLeftBarButtonItem:cancelButton animated:YES];
+	[self.navigationItem setLeftBarButtonItem:cancelButton animated:NO];
 	
 	UIBarButtonItem *postingButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
 																					target:self

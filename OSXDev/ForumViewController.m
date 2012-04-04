@@ -101,7 +101,7 @@
 																		 style:UIBarButtonItemStylePlain
 																		target:self
 																		action:@selector(clickLogin:)] autorelease];
-		[self.navigationItem setLeftBarButtonItem:loginButton animated:YES];
+		[self.navigationItem setLeftBarButtonItem:loginButton animated:NO];
 	}
 }
 
@@ -130,7 +130,7 @@
 												action:@selector(clickLogin:)] autorelease];
 	}
 	
-	[self.navigationItem setLeftBarButtonItem:item animated:YES];
+	[self.navigationItem setLeftBarButtonItem:item animated:NO];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -230,7 +230,7 @@
 																	 style:UIBarButtonItemStylePlain
 																	target:self
 																	action:@selector(clickLogin:)] autorelease];
-	[self.navigationItem setLeftBarButtonItem:loginButton animated:YES];
+	[self.navigationItem setLeftBarButtonItem:loginButton animated:NO];
 }
 
 // MARK: -
@@ -357,7 +357,7 @@
 												action:@selector(clickLogin:)] autorelease];
 	}
 	
-	[self.navigationItem setLeftBarButtonItem:item animated:YES];
+	[self.navigationItem setLeftBarButtonItem:item animated:NO];
 }
 
 // MARK: -
@@ -396,7 +396,7 @@
 																		  style:UIBarButtonItemStylePlain
 																		 target:self
 																		 action:@selector(clickLogout:)] autorelease];
-		[self.navigationItem setLeftBarButtonItem:logoutButton animated:YES];
+		[self.navigationItem setLeftBarButtonItem:logoutButton animated:NO];
 		
 		[[UserInfo sharedInfo] setLoginStatus:UserInfoLoginStatusLoggedIn];
 		

@@ -48,7 +48,7 @@
 	UIBarButtonItem *cancelButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
 																				   target:self
 																				   action:@selector(clickCancel:)] autorelease];
-	[self.navigationItem setLeftBarButtonItem:cancelButton animated:YES];
+	[self.navigationItem setLeftBarButtonItem:cancelButton animated:NO];
 	
 	UITableView *tableView = [[[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped] autorelease];
 	tableView.autoresizingMask = UIViewAutoresizingFlexibleAll;
