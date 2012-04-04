@@ -20,7 +20,6 @@
 
 @interface QueryHelper : NSObject
 
-+ (NSInteger)identifierWithURLString:(NSString *)urlString token:(NSString *)token;
 + (NSString *)valueWithURLString:(NSString *)urlString token:(NSString *)token;
 
 @end

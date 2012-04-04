@@ -54,7 +54,7 @@
 		self.forumTitle = [forumInfo objectForKey:@"forum_title"];
 		NSString *href = [forumInfo objectForKey:@"forum_href"];
 		
-		self.forumId = [QueryHelper identifierWithURLString:href token:@"f"];
+		self.forumId = [[QueryHelper valueWithURLString:href token:@"f"] integerValue];
 		
 		NetworkObject *networkObject = [[[NetworkObject alloc] initWithDelegate:self] autorelease];
 		self.networkObject = networkObject;

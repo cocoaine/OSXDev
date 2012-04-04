@@ -53,8 +53,8 @@
 //		NSString *title = [topicInfo objectForKey:@"topic_title"];
 		NSString *href = [topicInfo objectForKey:@"topic_href"];
 		
-		self.forumId = [QueryHelper identifierWithURLString:href token:@"f"];
-		self.topicId = [QueryHelper identifierWithURLString:href token:@"t"];
+		self.forumId = [[QueryHelper valueWithURLString:href token:@"f"] integerValue];
+		self.topicId = [[QueryHelper valueWithURLString:href token:@"t"] integerValue];
 		NSLog(@"self.forumId : %d", self.forumId);
 		NSLog(@"self.topicId : %d", self.topicId);
 		

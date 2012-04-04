@@ -366,27 +366,6 @@
 
 @implementation QueryHelper
 
-+ (NSInteger)identifierWithURLString:(NSString *)urlString token:(NSString *)token {
-	NSURL *url = [NSURL URLWithString:urlString];
-	
-	NSString *queryString = [url query];
-	if (queryString) {
-		NSArray *params = [queryString componentsSeparatedByString:@"&"];
-		for (int i = 0; i < [params count]; i++) {
-			NSArray *keyValues = [[params objectAtIndex:i] componentsSeparatedByString:@"="];
-			if ([keyValues count] >= 2) {
-				NSString *key = [keyValues objectAtIndex:0];
-				if ([key isEqualToString:token]) {
-					NSString *value = [keyValues objectAtIndex:1];
-					return [value integerValue];
-				}
-			}
-		}
-	}
-	
-	return -1;
-}
-
 + (NSString *)valueWithURLString:(NSString *)urlString token:(NSString *)token {
 	NSURL *url = [NSURL URLWithString:urlString];
 	
