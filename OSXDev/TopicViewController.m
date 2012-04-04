@@ -405,6 +405,15 @@
 	}
 	
 	if (requestType == NetworkRequestViewForum) {
+		NSString *dataString = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
+		NSRange dataRange = [dataString rangeOfString:@"이 포럼에서 새 글타래를 올릴 수 있습니다."];
+		if (dataRange.location != NSNotFound) {
+			self.writeButton.enabled = YES;
+		}
+		else {
+			self.writeButton.enabled = NO;
+		}
+        
 		self.topicList = nil;
 		[self.topicTableView reloadData];
 		
@@ -452,7 +461,6 @@
 		}
 		
 		self.gotoButton.enabled = YES;
-		self.writeButton.enabled = YES;
 		
 		[self.topicTableView reloadData]; 
 	}

@@ -398,8 +398,6 @@
 	}
 	
 	if (requestType == NetworkRequestViewTopic) {
-		NSLog(@"thread : %@", [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease]);
-		
 		NSDictionary *threadInfo = [HTMLHelper convertThreadInfo:data];
 		
 		NSString *htmlString = [threadInfo objectForKey:@"thread_content"];

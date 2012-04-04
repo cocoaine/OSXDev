@@ -11,6 +11,9 @@
 @interface PostingViewController ()
 - (void)clickCancel:(id)sender;
 - (void)clickPosting:(id)sender;
+- (void)keyboardWillShow:(NSNotification *)notification;
+- (void)keyboardWillHide:(NSNotification *)notification;
+- (void)resizeViewControllerToFitScreen:(CGRect)bounds isON:(BOOL)isON;
 @end
 
 @implementation PostingViewController
@@ -24,10 +27,12 @@
 @synthesize lastClick = _lastClick;
 @synthesize creationTime = _creationTime;
 @synthesize formToken = _formToken;
-@synthesize postingTableView = _postingTableView;
 @synthesize subjectTextField = _subjectTextField;
 @synthesize messageTextView = _messageTextView;
 @synthesize forceCancel = _forceCancel;
+@synthesize contentView = _contentView;
+@synthesize keyboardBounds = _keyboardBounds;
+@synthesize contentFrame = _contentFrame;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil forumId:(NSInteger)forumId topicId:(NSInteger)topicId
 {
@@ -61,18 +66,66 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	UITableView *tableView = [[[UITableView alloc] initWithFrame:self.view.bounds
-														   style:UITableViewStylePlain] autorelease];
-	tableView.autoresizingMask = UIViewAutoresizingFlexibleAll;
-	tableView.delegate = self;
-	tableView.dataSource = self;
-	tableView.allowsSelection = NO;
+	UIView *contentView = [[[UIView alloc] initWithFrame:self.view.bounds] autorelease];
+	contentView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+	contentView.backgroundColor = [UIColor whiteColor];
 	
-	self.postingTableView = tableView;
+	self.contentView = contentView;
 	
-	[self.view addSubview:tableView];
+	[self.view addSubview:self.contentView];
 	
-	[self.postingTableView reloadData];
+	CGRect frameRect = CGRectZero;
+	frameRect.origin.x = 5.f;
+	frameRect.origin.y = 5.f;
+	frameRect.size.width = self.view.bounds.size.width - 10.f;
+	frameRect.size.height = 20.f;
+	
+	UITextField *textField = [[[UITextField alloc] initWithFrame:frameRect] autorelease];
+	textField.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleWidth);
+	textField.backgroundColor = [UIColor whiteColor];
+	textField.textColor = [UIColor blackColor];
+	textField.delegate = self;
+	textField.font = [UIFont boldSystemFontOfSize:18.f];
+	
+	textField.placeholder = @"제목을 입력하세요.";
+	textField.returnKeyType = UIReturnKeyNext;
+	
+	self.subjectTextField = textField;
+	
+	[self.contentView addSubview:self.subjectTextField];
+	
+	frameRect.origin.x = 0.f;
+	frameRect.origin.y = self.subjectTextField.frame.origin.y + self.subjectTextField.frame.size.height + 5.f;
+	frameRect.size.width = self.view.bounds.size.width;
+	frameRect.size.height = self.contentView.frame.size.height - frameRect.origin.y - 44.f;
+	
+	UITextView *textView = [[[UITextView alloc] initWithFrame:frameRect] autorelease];
+	textView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+	textView.backgroundColor = [UIColor clearColor];
+	textView.textColor = [UIColor blackColor];
+	textView.delegate = self;
+	textView.font = [UIFont systemFontOfSize:16.f];
+	
+	textView.returnKeyType = UIReturnKeyDone;
+	
+	frameRect.origin.x = 0.f;
+	frameRect.size.height = 1.f;
+	
+	UIView *separatorTop = [[[UIView alloc] initWithFrame:frameRect] autorelease];
+	separatorTop.backgroundColor = [UIColor colorWithWhite:0.8f alpha:0.7f];
+	separatorTop.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
+	[self.contentView addSubview:separatorTop];
+	
+	frameRect.origin.y += 1.f;
+	
+	UIView *separatorBottom = [[[UIView alloc] initWithFrame:frameRect] autorelease];
+	separatorBottom.backgroundColor = [UIColor colorWithWhite:0.2f alpha:0.5f];
+	separatorBottom.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
+	[self.contentView addSubview:separatorBottom];
+	
+	self.messageTextView = textView;
+	
+	[self.contentView addSubview:self.messageTextView];
 	
 	UIBarButtonItem *cancelButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
 																				   target:self
@@ -96,6 +149,26 @@
 {
     [super viewDidUnload];
     // Release any retained subviews of the main view.
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self 
+											 selector:@selector(keyboardWillShow:) 
+												 name:UIKeyboardWillShowNotification 
+											   object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self 
+											 selector:@selector(keyboardWillHide:) 
+												 name:UIKeyboardWillHideNotification 
+											   object:nil];	
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+	[super viewWillDisappear:animated];
+	
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -143,9 +216,9 @@
 	[_lastClick release];
 	[_creationTime release];
 	[_formToken release];
-	[_postingTableView release];
 	[_subjectTextField release];
 	[_messageTextView release];
+	[_contentView release];
 	
     [super dealloc];
 }
@@ -169,115 +242,42 @@
 															formToken:self.formToken];
 }
 
-// MARK: -
-// MARK: << UITableView >>
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return 1;
+- (void)keyboardWillShow:(NSNotification *)notification {
+	NSDictionary *userInfo = [notification userInfo];
+	CGRect keyboardRect = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+	self.keyboardBounds = [self.view convertRect:keyboardRect fromView:nil];
+	
+	self.contentFrame = CGRectMake(self.contentView.frame.origin.x, self.contentView.frame.origin.y, self.contentView.frame.size.width, self.contentView.frame.size.height);
+	[self resizeViewControllerToFitScreen:self.keyboardBounds isON:YES];
+	
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return 2;
+- (void)keyboardWillHide:(NSNotification *)notification {
+	self.keyboardBounds = CGRectZero;
+	
+	[self resizeViewControllerToFitScreen:self.keyboardBounds isON:NO];
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	CGFloat height = 0.f;
-	switch (indexPath.row) {
-		case 0:
-		{
-			height = tableView.rowHeight;
-		}
-			break;
-			
-		case 1:
-		{
-			height = self.postingTableView.bounds.size.height;
-		}
-			break;
-			
-		default:
-			break;
+- (void)resizeViewControllerToFitScreen:(CGRect)bounds isON:(BOOL)isON {
+	// Needs adjustment for portrait orientation!
+	CGRect frame = self.contentView.frame;
+	
+	if (isON) {
+		frame.size.height -= bounds.size.height;
+	}
+	else {
+		frame = self.contentFrame;
 	}
 	
-	return height;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	static NSString *cellIdentifier = @"cellIdentifier";
-	
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-    if (cell == nil){
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-									   reuseIdentifier:cellIdentifier] autorelease];
-    }
-	
-	switch (indexPath.row) {
-		case 0:
-		{
-			if (self.subjectTextField == nil) {
-				CGRect textFieldRect = CGRectZero;
-				textFieldRect.origin.x = 0.f;
-				textFieldRect.origin.y = 0.f;
-				textFieldRect.size.width = self.view.bounds.size.width - 20.f;
-				textFieldRect.size.height = 20.f;
-				
-				UITextField *textField = [[[UITextField alloc] initWithFrame:textFieldRect] autorelease];
-				textField.autoresizingMask = UIViewAutoresizingFlexibleAll;
-				textField.backgroundColor = [UIColor clearColor];
-				textField.textColor = [UIColor blackColor];
-				textField.delegate = self;
-				textField.font = [UIFont boldSystemFontOfSize:18.f];
-				
-				textField.placeholder = @"제목을 입력하세요.";
-				textField.returnKeyType = UIReturnKeyNext;
-				
-				self.subjectTextField = textField;
-			}
-			
-			cell.accessoryView = self.subjectTextField;
-		}
-			break;
-			
-		case 1:
-		{
-			if (self.messageTextView == nil) {
-				CGRect textViewdRect = CGRectZero;
-				textViewdRect.origin.x = 0.f;
-				textViewdRect.origin.y = 0.f;
-				textViewdRect.size.width = self.view.bounds.size.width - 20.f;
-				textViewdRect.size.height = self.postingTableView.bounds.size.height;
-				
-				UITextView *textView = [[[UITextView alloc] initWithFrame:textViewdRect] autorelease];
-				textView.autoresizingMask = UIViewAutoresizingFlexibleAll;
-				textView.backgroundColor = [UIColor clearColor];
-				textView.textColor = [UIColor blackColor];
-				textView.delegate = self;
-				textView.font = [UIFont systemFontOfSize:16.f];
-				
-				textView.returnKeyType = UIReturnKeyDone;
-				
-				self.messageTextView = textView;
-			}
-			
-			cell.accessoryView = self.messageTextView;
-		}
-			break;
-			
-		default:
-			break;
-	}
-	
-    return cell;
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	[tableView deselectRowAtIndexPath:indexPath animated:YES];
-}
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-	if (scrollView == self.postingTableView) {
-		[self.subjectTextField resignFirstResponder];
-		[self.messageTextView resignFirstResponder];
-	}
+	[UIView animateWithDuration:0.3f 
+						  delay:0.f 
+						options:UIViewAnimationOptionBeginFromCurrentState 
+					 animations:^{
+						 self.contentView.frame = frame;
+					 }
+					 completion:^(BOOL finished){
+						 // do nothing...
+					 }];
 }
 
 // MARK: -
@@ -315,8 +315,22 @@
 	[SVProgressHUD dismiss];
 	
 	if (requestType == NetworkRequestPostingData) {
-		NSLog(@"data : %@", [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease]);
 		NSDictionary *postingInfo = [HTMLHelper convertPostingInfo:data];
+		
+		if ([postingInfo count] == 0) {
+			// 아무런 포스팅 밸류가 없으면
+			// 무조건 오류로 간주하자.
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"불러오기 오류"
+																message:@"글쓰기 불러오기에 실패하였습니다.\n잠시 후에 다시 시도해주세요." 
+															   delegate:self
+													  cancelButtonTitle:@"확인"
+													  otherButtonTitles:nil, nil];
+			
+			[alertView show];
+			[alertView release];
+			
+			return;
+		}
 		
 		self.topicCurPostId = [postingInfo objectForKey:@"topic_cur_post_id"];
 		self.lastClick = [postingInfo objectForKey:@"lastclick"];

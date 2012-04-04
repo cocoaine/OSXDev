@@ -237,7 +237,10 @@
 	resultNodes = [htmlParser nodesForXPath:@"//div[contains(@class, 'panel')]" error:nil];
 	if ([resultNodes count] > 0) {
 		for (CXMLElement *element in resultNodes) {
-			[htmlString appendString:[element XMLString]];
+            if ([element attributeForName:@"id"] == nil) {
+                // id가 있는 panel은 posting panel...
+                [htmlString appendString:[element XMLString]];
+            }
 		}
 	}
 	
@@ -245,8 +248,13 @@
 	if ([resultNodes count] > 0) {
 		for (NSInteger i = 0; i < [resultNodes count]; i++) {
 			CXMLElement *element = (CXMLElement *)[resultNodes objectAtIndex:i];
+            
+            for (CXMLNode *node in [element children]) {
+                if ([[node name] isEqualToString:@"ul"] == NO) {
+                    [htmlString appendString:[node XMLString]];
+                }
+            }
 			
-			[htmlString appendString:[element XMLString]];
 			if (i != [resultNodes count] - 1) {
 				[htmlString appendString:@"<hr style='border: 0; color: #000; background-color: #000; height: 1px;'/>"];
 			}
@@ -256,7 +264,7 @@
 	[htmlString appendString:@"</html>"];
 	
 	NSString *tmpString = htmlString;
-	NSString *regEx = @"</?(?i:a|embed|object|frameset|frame|iframe|meta|link)(.|\n)*?>";
+	NSString *regEx = @"</?(?i:a|embed|object|frameset|frame|iframe|meta|link|input)(.|\n)*?>";
 	NSRange r;
 	while ((r = [tmpString rangeOfString:regEx options:NSRegularExpressionSearch]).location != NSNotFound) {
 		tmpString = [tmpString stringByReplacingCharactersInRange:r withString:@""];
