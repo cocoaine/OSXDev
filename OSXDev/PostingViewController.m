@@ -281,6 +281,14 @@
 }
 
 // MARK: -
+// MARK: << UIAlertViewDelegate >>
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex; {
+	if (alertView.title == @"불러오기 오류") {
+		[self clickCancel:nil];
+	}
+}
+
+// MARK: -
 // MARK: << LoginViewControllerDelegate >>
 - (void)loginViewControllerDidFinishLogin:(LoginViewController *)controller {
 	[controller dismissModalViewControllerAnimated:YES];
@@ -307,8 +315,8 @@
 	[SVProgressHUD dismiss];
 	
 	if (requestType == NetworkRequestPostingData) {
+		NSLog(@"data : %@", [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease]);
 		NSDictionary *postingInfo = [HTMLHelper convertPostingInfo:data];
-		NSLog(@"postingInfo : %@", postingInfo);
 		
 		self.topicCurPostId = [postingInfo objectForKey:@"topic_cur_post_id"];
 		self.lastClick = [postingInfo objectForKey:@"lastclick"];
@@ -343,7 +351,14 @@
 	[SVProgressHUD dismiss];
 	
 	if (requestType == NetworkRequestPostingData) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"불러오기 오류"
+															message:@"글쓰기 불러오기에 실패하였습니다.\n잠시 후에 다시 시도해주세요." 
+														   delegate:self
+												  cancelButtonTitle:@"확인"
+												  otherButtonTitles:nil, nil];
 		
+		[alertView show];
+		[alertView release];
 	}
 	else if (requestType == NetworkRequestPosting) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"글쓰기 오류"

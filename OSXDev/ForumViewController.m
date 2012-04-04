@@ -77,22 +77,20 @@
 	
 	[self.view addSubview:self.forumTableView];
 	
-	[SVProgressHUD showInView:self.view status:@"로딩중..."];
-	
 	[self.indicatorView startAnimating];
 	[self.navigationItem setRightBarButtonItem:self.indicatorItem animated:YES];
 	
 	NSMutableDictionary *connectionInfo = [NSMutableDictionary dictionaryWithCapacity:0];
 	self.connectionInfo = connectionInfo;
 	
-	NSString *connectionIdentifier = [self.networkObject forumList];
-	[self.connectionInfo setObject:connectionIdentifier forKey:kOSXDevConnectionInfoKeyReqForum];
-	
 	// TODO :
 	// 쿠키 정리 후에 앱 입장할 때 자동로그인 설정되어 있으면 로그인 시도한다.
 	// [UserInfo sharedInfo].autoLogin
+	NSString *connectionIdentifier = nil;
 	if ([[UserInfo sharedInfo] userId] != nil && [[UserInfo sharedInfo] userPassword] != nil &&
 		[UserInfo sharedInfo].autoLogin) {
+		[SVProgressHUD showInView:self.view status:@"로그인중..."];
+		
 		connectionIdentifier = [self.networkObject login];
 		[self.connectionInfo setObject:connectionIdentifier forKey:kOSXDevConnectionInfoKeyReqLogin];
 	}
@@ -102,6 +100,11 @@
 																		target:self
 																		action:@selector(clickLogin:)] autorelease];
 		[self.navigationItem setLeftBarButtonItem:loginButton animated:NO];
+		
+		[SVProgressHUD showInView:self.view status:@"목록 불러오는 중..."];
+		
+		connectionIdentifier = [self.networkObject forumList];
+		[self.connectionInfo setObject:connectionIdentifier forKey:kOSXDevConnectionInfoKeyReqForum];
 	}
 }
 
@@ -372,7 +375,7 @@
 		[(UIView *)[self.view viewWithTag:kOSXDevErrorLabelTag] removeFromSuperview];
 	}
 	
-	if (requestType == NetworkRequestMain) {
+	if (requestType == NetworkRequestForumList) {
 		NSDictionary *forumInfo = [HTMLHelper convertForumInfo:data];
 		
 		NSArray *tmpList = [forumInfo objectForKey:@"forum_list"];
@@ -403,6 +406,14 @@
 		if ([self.connectionInfo objectForKey:kOSXDevConnectionInfoKeyReqLogin]) {
 			[self.connectionInfo removeObjectForKey:kOSXDevConnectionInfoKeyReqLogin];
 		}
+		
+		[SVProgressHUD showInView:self.view status:@"목록 불러오는 중..."];
+		
+		[self.indicatorView startAnimating];
+		[self.navigationItem setRightBarButtonItem:self.indicatorItem animated:YES];
+		
+		NSString *connectionIdentifier = [self.networkObject forumList];
+		[self.connectionInfo setObject:connectionIdentifier forKey:kOSXDevConnectionInfoKeyReqForum];
 	}
 	else {
 		
@@ -415,7 +426,7 @@
 	[self.navigationItem setRightBarButtonItem:self.refreshButton animated:YES];
 	[self.indicatorView stopAnimating];
 	
-	if (requestType == NetworkRequestMain) {
+	if (requestType == NetworkRequestForumList) {
 		if ([self.view viewWithTag:kOSXDevErrorLabelTag] == nil) {
 			UILabel *errorLabel = [[[UILabel alloc] initWithFrame:self.view.bounds] autorelease];
 			errorLabel.autoresizingMask = UIViewAutoresizingFlexibleAll;

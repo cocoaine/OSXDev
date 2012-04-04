@@ -30,7 +30,7 @@
 #define kOSXDevURLRequestTimeout	30.f
 
 typedef enum _NetworkURLType {
-	NetworkURLMain			= 0,
+	NetworkURLForumList		= 0,
 	NetworkURLForum			= 1,
 	NetworkURLTopic			= 2,
 	NetworkURLMember		= 3,
@@ -40,7 +40,7 @@ typedef enum _NetworkURLType {
 } NetworkURLType;
 
 typedef enum _NetworkRequestType {
-	NetworkRequestMain			= 0,
+	NetworkRequestForumList		= 0,
 	NetworkRequestViewForum		= 1,
 	NetworkRequestViewTopic		= 2,
 	NetworkRequestViewMember	= 3,

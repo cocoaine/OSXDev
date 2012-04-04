@@ -50,10 +50,10 @@
 													 name:kOSXDevNotificationLoginSucceed
 												   object:nil];
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self
-												 selector:@selector(cookieChangedNotificationCalled:)
-													 name:NSHTTPCookieManagerCookiesChangedNotification
-												   object:nil];
+//		[[NSNotificationCenter defaultCenter] addObserver:self
+//												 selector:@selector(cookieChangedNotificationCalled:)
+//													 name:NSHTTPCookieManagerCookiesChangedNotification
+//												   object:nil];
     }
     return self;
 }
@@ -64,9 +64,9 @@
 													name:kOSXDevNotificationLoginSucceed
 												  object:nil];
 	
-	[[NSNotificationCenter defaultCenter] removeObserver:self
-													name:NSHTTPCookieManagerCookiesChangedNotification
-												  object:nil];
+//	[[NSNotificationCenter defaultCenter] removeObserver:self
+//													name:NSHTTPCookieManagerCookiesChangedNotification
+//												  object:nil];
 	
     self.delegate = nil;
 	
@@ -110,7 +110,7 @@
 														   cachePolicy:NSURLRequestUseProtocolCachePolicy
 													   timeoutInterval:kOSXDevURLRequestTimeout];
 	// 모바일 페이지는 content desc가 없다...
-	return [self sendRequest:request requestType:NetworkRequestMain isMobile:NO];
+	return [self sendRequest:request requestType:NetworkRequestForumList isMobile:NO];
 }
 
 - (NSString *)topicListWithForumId:(NSInteger)forumId start:(NSInteger)start {
@@ -266,7 +266,7 @@
 	NSMutableString *urlString = [NSMutableString stringWithString:kOSXDevURLPrefix];
 	
 	switch (urlType) {
-		case NetworkURLMain:
+		case NetworkURLForumList:
 			[urlString appendString:kOSXDevURLMain];
 			break;
 			

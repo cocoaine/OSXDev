@@ -327,8 +327,6 @@
 // MARK: -
 // MARK: << UIWebViewDelegate >>
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
-	NSLog(@"request url : %@", [[request URL] absoluteString]);
-	
 	if (navigationType == UIWebViewNavigationTypeLinkClicked) {
 		BrowserViewController *viewController = [[[BrowserViewController alloc] 
 												  initWithNibName:nil bundle:nil url:[request URL]] autorelease];
@@ -400,6 +398,8 @@
 	}
 	
 	if (requestType == NetworkRequestViewTopic) {
+		NSLog(@"thread : %@", [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease]);
+		
 		NSDictionary *threadInfo = [HTMLHelper convertThreadInfo:data];
 		
 		NSString *htmlString = [threadInfo objectForKey:@"thread_content"];
