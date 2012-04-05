@@ -8,11 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-#import "LoginViewController.h"
-
 @protocol PostingViewControllerDelegate;
 
-@interface PostingViewController : UIViewController <UITextFieldDelegate, UITextViewDelegate, LoginViewControllerDelegate, NetworkObjectDelegate>
+@interface PostingViewController : UIViewController <UITextFieldDelegate, UITextViewDelegate, NetworkObjectDelegate>
 
 @property (assign, nonatomic) id <PostingViewControllerDelegate> delegate;
 @property (assign, nonatomic) NSInteger forumId;
@@ -27,8 +25,6 @@
 
 @property (retain, nonatomic) UITextField *subjectTextField;
 @property (retain, nonatomic) UITextView *messageTextView;
-
-@property (assign, nonatomic) BOOL forceCancel;
 
 @property (retain, nonatomic) UIView *contentView;
 @property (assign, nonatomic) CGRect keyboardBounds;

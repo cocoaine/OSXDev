@@ -120,6 +120,8 @@
 
 - (void)startLoginRequest {
 	NSLog(@"startLoginRequest called");
+	[self.idTextField resignFirstResponder];
+	[self.pwTextField resignFirstResponder];
 	
 	if (self.idTextField.text) {
 		[[UserInfo sharedInfo] setUserId:self.idTextField.text];
@@ -129,7 +131,7 @@
 		[[UserInfo sharedInfo] setUserPassword:self.pwTextField.text];
 	}
 	
-	[SVProgressHUD showInView:self.view status:@"로그인 중..."];
+	[SVProgressHUD showInView:self.view status:@"로그인 중..." networkIndicator:NO posY:100.f];
 	self.connectionIdentifier = [self.networkObject login];
 }
 
@@ -312,11 +314,33 @@
 }
 
 // MARK: -
+// MARK: << UIAlertViewDelegate >>
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	[self.idTextField becomeFirstResponder];
+}
+
+// MARK: -
 // MARK: << NetworkObjectDelegate >>
 - (void)requestSucceed:(NSData *)data forRequest:(NSString *)connectionIdentifier requestType:(NetworkRequestType)requestType {
 	[SVProgressHUD dismiss];
 	
 	if (requestType == NetworkRequestLogin) {
+		NSString *dataString = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
+		NSRange dataRange = [dataString rangeOfString:@"로그인 했습니다."];
+		if (dataRange.location == NSNotFound) {
+			// login 오류.
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"로그인 오류"
+																message:@"로그인에 실패하였습니다.\n잠시 후에 다시 시도해주세요." 
+															   delegate:self
+													  cancelButtonTitle:@"확인"
+													  otherButtonTitles:nil, nil];
+			
+			[alertView show];
+			[alertView release];
+			
+			return;
+		}
+		
 		[[UserInfo sharedInfo] setLoginStatus:UserInfoLoginStatusLoggedIn];
 		
 		if (self.delegate) {

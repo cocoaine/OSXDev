@@ -29,7 +29,6 @@
 @synthesize formToken = _formToken;
 @synthesize subjectTextField = _subjectTextField;
 @synthesize messageTextView = _messageTextView;
-@synthesize forceCancel = _forceCancel;
 @synthesize contentView = _contentView;
 @synthesize keyboardBounds = _keyboardBounds;
 @synthesize contentFrame = _contentFrame;
@@ -39,7 +38,6 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
-		self.forceCancel = NO;
 		
 		// topic id는 무조건 있어야 됨.
 		// forum id는 -1일 경우에는 new topic, 그 이외에는 reply
@@ -137,12 +135,10 @@
 																					action:@selector(clickPosting:)] autorelease];
 	[self.navigationItem setRightBarButtonItem:postingButton animated:YES];
 	
-	if ([UserInfo sharedInfo].loginStatus == UserInfoLoginStatusLoggedIn) {
-		self.navigationController.view.userInteractionEnabled = NO;
-		[SVProgressHUD showInView:self.view status:@"글쓰기 불러오는 중..."];
-		self.connectionIdentifier = [self.networkObject postingDataWithForumId:self.forumId
-																	   topicId:self.topicId];
-	}
+	self.navigationController.navigationBar.userInteractionEnabled = NO;
+	[SVProgressHUD showInView:self.view status:@"글쓰기 불러오는 중..." networkIndicator:NO posY:100.f];
+	self.connectionIdentifier = [self.networkObject postingDataWithForumId:self.forumId
+																   topicId:self.topicId];
 }
 
 - (void)viewDidUnload
@@ -173,25 +169,6 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-	
-	if (self.forceCancel) {
-		[self dismissModalViewControllerAnimated:YES];
-	}
-	else {
-		if ([UserInfo sharedInfo].loginStatus == UserInfoLoginStatusNotLoggedIn) {
-			LoginViewController *viewController = [[[LoginViewController alloc] initWithNibName:nil
-																						 bundle:nil] autorelease];
-			viewController.delegate = self;
-			
-			UINavigationController *navController = [[[UINavigationController alloc] initWithRootViewController:viewController] autorelease];
-			
-			if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-				navController.modalPresentationStyle = UIModalPresentationFormSheet;
-			}
-			
-			[self.navigationController presentModalViewController:navController animated:NO];
-		}
-	}
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -230,8 +207,8 @@
 }
 
 - (void)clickPosting:(id)sender {
-	self.navigationController.view.userInteractionEnabled = NO;
-	[SVProgressHUD showInView:self.view status:@"글 등록중..."];
+	self.navigationController.navigationBar.userInteractionEnabled = NO;
+	[SVProgressHUD showInView:self.view status:@"글 등록중..." networkIndicator:NO posY:100.f];
 	self.connectionIdentifier= [self.networkObject postingWithSubject:self.subjectTextField.text
 															  message:self.messageTextView.text
 															  forumId:self.forumId
@@ -288,40 +265,20 @@
 // MARK: -
 // MARK: << UIAlertViewDelegate >>
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex; {
-	if (alertView.title == @"불러오기 오류") {
+	if (alertView.tag == kOSXDevAlertTagErrorLoading) {
 		[self clickCancel:nil];
 	}
 }
 
 // MARK: -
-// MARK: << LoginViewControllerDelegate >>
-- (void)loginViewControllerDidFinishLogin:(LoginViewController *)controller {
-	[controller dismissModalViewControllerAnimated:YES];
-	
-	if ([UserInfo sharedInfo].loginStatus == UserInfoLoginStatusLoggedIn) {
-		self.navigationController.view.userInteractionEnabled = NO;
-		[SVProgressHUD showInView:self.view status:@"글쓰기 불러오는 중..."];
-		self.connectionIdentifier = [self.networkObject postingDataWithForumId:self.forumId
-																	   topicId:self.topicId];
-	}
-}
-
-- (void)loginViewControllerDidCancel:(LoginViewController *)controller {
-	NSLog(@"loginViewControllerDidCancel");
-	self.forceCancel = YES;
-	
-	[controller dismissModalViewControllerAnimated:NO];
-}
-
-// MARK: -
 // MARK: << NetworkObjectDelegate >>
 - (void)requestSucceed:(NSData *)data forRequest:(NSString *)connectionIdentifier requestType:(NetworkRequestType)requestType {
-	self.navigationController.view.userInteractionEnabled = YES;
+	self.navigationController.navigationBar.userInteractionEnabled = YES;
 	[SVProgressHUD dismiss];
 	
 	if (requestType == NetworkRequestPostingData) {
 		NSDictionary *postingInfo = [HTMLHelper convertPostingInfo:data];
-		
+		NSLog(@"[postingInfo count] : %d", [postingInfo count]);
 		if ([postingInfo count] == 0) {
 			// 아무런 포스팅 밸류가 없으면
 			// 무조건 오류로 간주하자.
@@ -330,6 +287,7 @@
 															   delegate:self
 													  cancelButtonTitle:@"확인"
 													  otherButtonTitles:nil, nil];
+			alertView.tag = kOSXDevAlertTagErrorLoading;
 			
 			[alertView show];
 			[alertView release];
@@ -366,7 +324,7 @@
 }
 
 - (void)requestFailed:(NSString *)connectionIdentifier requestType:(NetworkRequestType)requestType error:(NSError *)error {
-	self.navigationController.view.userInteractionEnabled = YES;
+	self.navigationController.navigationBar.userInteractionEnabled = YES;
 	[SVProgressHUD dismiss];
 	
 	if (requestType == NetworkRequestPostingData) {
@@ -375,6 +333,7 @@
 														   delegate:self
 												  cancelButtonTitle:@"확인"
 												  otherButtonTitles:nil, nil];
+		alertView.tag = kOSXDevAlertTagErrorLoading;
 		
 		[alertView show];
 		[alertView release];
@@ -385,6 +344,7 @@
 														   delegate:self
 												  cancelButtonTitle:@"확인"
 												  otherButtonTitles:nil, nil];
+		alertView.tag = kOSXDevAlertTagError;
 		
 		[alertView show];
 		[alertView release];

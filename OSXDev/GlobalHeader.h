@@ -18,6 +18,11 @@
 #define kOSXDevTopicMaxCount				25
 #define kOSXDevThreadMaxCount				10
 
+#define kOSXDevAlertTagMovePage				1441
+#define kOSXDevAlertTagError				1442
+#define kOSXDevAlertTagErrorLoading			1443
+#define kOSXDevAlertTagLoginRequired		1444
+
 #define kOSXDevErrorLabelTag				5901
 
 #define kOSXDevURLPrefix					@"http://www.osxdev.org/phpBB3/"

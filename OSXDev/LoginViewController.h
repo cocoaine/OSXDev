@@ -10,7 +10,7 @@
 
 @protocol LoginViewControllerDelegate;
 
-@interface LoginViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, NetworkObjectDelegate>
+@interface LoginViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, UIAlertViewDelegate, NetworkObjectDelegate>
 
 @property (assign, nonatomic) id <LoginViewControllerDelegate> delegate;
 @property (retain, nonatomic) UITableView *loginTableView;

@@ -10,8 +10,9 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "PostingViewController.h"
+#import "LoginViewController.h"
 
-@interface ThreadViewController : UIViewController <UIWebViewDelegate, UIAlertViewDelegate, NetworkObjectDelegate, PostingViewControllerDelegate>
+@interface ThreadViewController : UIViewController <UIWebViewDelegate, UIAlertViewDelegate, NetworkObjectDelegate, PostingViewControllerDelegate, LoginViewControllerDelegate>
 
 @property (retain, nonatomic) UIWebView *detailWebView;
 @property (retain, nonatomic) UIActivityIndicatorView *indicatorView;

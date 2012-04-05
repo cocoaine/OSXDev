@@ -9,8 +9,9 @@
 #import <UIKit/UIKit.h>
 
 #import "PostingViewController.h"
+#import "LoginViewController.h"
 
-@interface TopicViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate, NetworkObjectDelegate, PostingViewControllerDelegate>
+@interface TopicViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate, NetworkObjectDelegate, PostingViewControllerDelegate, LoginViewControllerDelegate>
 
 @property (retain, nonatomic) UITableView *topicTableView;
 @property (retain, nonatomic) UIActivityIndicatorView *indicatorView;

@@ -276,6 +276,7 @@
 													   delegate:self
 											  cancelButtonTitle:@"취소"
 											  otherButtonTitles:@"확인", nil];
+	alertView.tag = kOSXDevAlertTagMovePage;
 	
 	if (self.pageTextField) {
 		[self.pageTextField removeFromSuperview];
@@ -300,19 +301,32 @@
 }
 
 - (void)clickWrite:(id)sender {
-	PostingViewController *viewController = [[[PostingViewController alloc] initWithNibName:nil
-																					 bundle:nil
-																					forumId:self.forumId
-																					topicId:-1] autorelease];
-	viewController.delegate = self;
-	
-	UINavigationController *navController = [[[UINavigationController alloc] initWithRootViewController:viewController] autorelease];
-	
-	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-		navController.modalPresentationStyle = UIModalPresentationFormSheet;
+	if ([UserInfo sharedInfo].loginStatus == UserInfoLoginStatusNotLoggedIn) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"로그인 필요"
+															message:@"글 작성은 로그인이 필요합니다.\n로그인하시겠습니까?"
+														   delegate:self
+												  cancelButtonTitle:@"아니오"
+												  otherButtonTitles:@"예", nil];
+		alertView.tag = kOSXDevAlertTagLoginRequired;
+		
+		[alertView show];
+		[alertView release];
 	}
-	
-	[self.navigationController presentModalViewController:navController animated:YES];
+	else {
+		PostingViewController *viewController = [[[PostingViewController alloc] initWithNibName:nil
+																						 bundle:nil
+																						forumId:self.forumId
+																						topicId:-1] autorelease];
+		viewController.delegate = self;
+		
+		UINavigationController *navController = [[[UINavigationController alloc] initWithRootViewController:viewController] autorelease];
+		
+		if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+			navController.modalPresentationStyle = UIModalPresentationFormSheet;
+		}
+		
+		[self.navigationController presentModalViewController:navController animated:YES];
+	}
 }
 
 // MARK: -
@@ -356,42 +370,87 @@
 // MARK: -
 // MARK: << UIAlertViewDelegate >>
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex; {
-	if (alertView.title == @"페이지 이동 오류") {
-		[self clickGoto:nil];
-	}
-	
-	if (buttonIndex == 1) {
-		// 이동...
-		NSInteger page = [[self.pageTextField text] integerValue];
-		if (page > self.totalPage || page < 1) {
-			UIAlertView *errorAlertView = [[UIAlertView alloc] initWithTitle:@"페이지 이동 오류"
-																	 message:@"페이지를 다시 입력하세요." 
-																	delegate:self
-														   cancelButtonTitle:nil
-														   otherButtonTitles:@"확인", nil];
-			
-			[errorAlertView show];
-			[errorAlertView release];
+	switch (alertView.tag) {
+		case kOSXDevAlertTagError:
+		{
+			[self clickGoto:nil];
 		}
-		else {
-			self.page = page;
-			self.start = ((page - 1) * kOSXDevTopicMaxCount);
+			break;
 			
-			[self.indicatorView startAnimating];
-			[self.navigationItem setRightBarButtonItem:self.indicatorItem animated:YES];
-			self.connectionIdentifier = [self.networkObject topicListWithForumId:self.forumId
-																		   start:self.start];
+		case kOSXDevAlertTagMovePage:
+		{
+			if (buttonIndex == 1) {
+				// 이동...
+				NSInteger page = [[self.pageTextField text] integerValue];
+				if (page > self.totalPage || page < 1) {
+					UIAlertView *errorAlertView = [[UIAlertView alloc] initWithTitle:@"페이지 이동 오류"
+																			 message:@"페이지를 다시 입력하세요." 
+																			delegate:self
+																   cancelButtonTitle:nil
+																   otherButtonTitles:@"확인", nil];
+					alertView.tag = kOSXDevAlertTagError;
+					
+					[errorAlertView show];
+					[errorAlertView release];
+				}
+				else {
+					self.page = page;
+					self.start = ((page - 1) * kOSXDevTopicMaxCount);
+					
+					[self.indicatorView startAnimating];
+					[self.navigationItem setRightBarButtonItem:self.indicatorItem animated:YES];
+					self.connectionIdentifier = [self.networkObject topicListWithForumId:self.forumId
+																				   start:self.start];
+				}
+			}
 		}
+			break;
+			
+		case kOSXDevAlertTagLoginRequired:
+		{
+			if (buttonIndex == 1) {
+				LoginViewController *viewController = [[[LoginViewController alloc] initWithNibName:nil bundle:nil] autorelease];
+				viewController.delegate = self;
+				
+				UINavigationController *navController = [[[UINavigationController alloc] initWithRootViewController:viewController] autorelease];
+				
+				if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+					navController.modalPresentationStyle = UIModalPresentationFormSheet;
+				}
+				
+				[self.navigationController presentModalViewController:navController animated:YES];
+			}
+		}
+			break;
+			
+		default:
+			break;
 	}
 }
 
 // MARK: -
 // MARK: << PostingViewControllerDelegate >>
 - (void)postingViewControllerDidFinishPosting:(PostingViewController *)controller {
-	[controller dismissModalViewControllerAnimated:YES];
+	[controller.navigationController dismissModalViewControllerAnimated:YES];
 	
 	// 글 다시 불러오기.
 	[self clickRefresh:nil];
+}
+
+// MARK: -
+// MARK: << LoginViewControllerDelegate >>
+- (void)loginViewControllerDidFinishLogin:(LoginViewController *)controller {
+	PostingViewController *viewController = [[[PostingViewController alloc] initWithNibName:nil
+																					 bundle:nil
+																					forumId:self.forumId
+																					topicId:-1] autorelease];
+	viewController.delegate = self;
+	
+	[controller.navigationController pushViewController:viewController animated:YES];
+}
+
+- (void)loginViewControllerDidCancel:(LoginViewController *)controller {
+	[controller.navigationController dismissModalViewControllerAnimated:YES];
 }
 
 // MARK: -
@@ -405,13 +464,19 @@
 	}
 	
 	if (requestType == NetworkRequestViewForum) {
-		NSString *dataString = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
-		NSRange dataRange = [dataString rangeOfString:@"이 포럼에서 새 글타래를 올릴 수 있습니다."];
-		if (dataRange.location != NSNotFound) {
-			self.writeButton.enabled = YES;
+		if ([UserInfo sharedInfo].loginStatus == UserInfoLoginStatusLoggedIn) {
+			NSString *dataString = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
+			NSRange dataRange = [dataString rangeOfString:@"이 포럼에서 새 글타래를 올릴 수 있습니다."];
+			if (dataRange.location != NSNotFound) {
+				self.writeButton.enabled = YES;
+			}
+			else {
+				self.writeButton.enabled = NO;
+			}
 		}
 		else {
-			self.writeButton.enabled = NO;
+			// 일단 write button 활성화해야 로그인이 가능하니.
+			self.writeButton.enabled = YES;
 		}
         
 		self.topicList = nil;
