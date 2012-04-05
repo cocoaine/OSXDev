@@ -44,6 +44,10 @@
 		99C4BC5D15215D3B00D19A65 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99C4BC5C15215D3B00D19A65 /* QuartzCore.framework */; };
 		99C4BC8715216FB300D19A65 /* NetworkObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 99C4BC8615216FB300D19A65 /* NetworkObject.m */; };
 		99C4BC9D1521915000D19A65 /* TopicViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99C4BC9C1521915000D19A65 /* TopicViewController.m */; };
+		99FB9158152D957300C713F6 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 99FB9156152D957300C713F6 /* Default.png */; };
+		99FB9159152D957300C713F6 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 99FB9157152D957300C713F6 /* Default@2x.png */; };
+		99FB915D152D98C700C713F6 /* Default-Landscape~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = 99FB915B152D98C700C713F6 /* Default-Landscape~ipad.png */; };
+		99FB915E152D98C700C713F6 /* Default~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = 99FB915C152D98C700C713F6 /* Default~ipad.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -117,6 +121,10 @@
 		99C4BC881521782200D19A65 /* NetworkHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NetworkHeader.h; sourceTree = "<group>"; };
 		99C4BC9B1521915000D19A65 /* TopicViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TopicViewController.h; sourceTree = "<group>"; };
 		99C4BC9C1521915000D19A65 /* TopicViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TopicViewController.m; sourceTree = "<group>"; };
+		99FB9156152D957300C713F6 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		99FB9157152D957300C713F6 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		99FB915B152D98C700C713F6 /* Default-Landscape~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Landscape~ipad.png"; sourceTree = "<group>"; };
+		99FB915C152D98C700C713F6 /* Default~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default~ipad.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -168,6 +176,10 @@
 			children = (
 				99352B0D1521C8DE009D02F9 /* icon.png */,
 				99352B0E1521C8DE009D02F9 /* icon@2x.png */,
+				99FB9156152D957300C713F6 /* Default.png */,
+				99FB9157152D957300C713F6 /* Default@2x.png */,
+				99FB915B152D98C700C713F6 /* Default-Landscape~ipad.png */,
+				99FB915C152D98C700C713F6 /* Default~ipad.png */,
 			);
 			path = Images;
 			sourceTree = "<group>";
@@ -370,6 +382,10 @@
 				99352B0A1521C32B009D02F9 /* SVProgressHUD.bundle in Resources */,
 				99352B0F1521C8DE009D02F9 /* icon.png in Resources */,
 				99352B101521C8DE009D02F9 /* icon@2x.png in Resources */,
+				99FB9158152D957300C713F6 /* Default.png in Resources */,
+				99FB9159152D957300C713F6 /* Default@2x.png in Resources */,
+				99FB915D152D98C700C713F6 /* Default-Landscape~ipad.png in Resources */,
+				99FB915E152D98C700C713F6 /* Default~ipad.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -473,8 +489,8 @@
 		99C4BBAD15215BDF00D19A65 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer: J.C. Yang (5K9ZBWN54L)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: J.C. Yang (5K9ZBWN54L)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "OSXDev/OSXDev-Prefix.pch";
 				HEADER_SEARCH_PATHS = "${SDKROOT}/usr/include/libxml2/**";
@@ -483,8 +499,8 @@
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-lxml2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "87A9B35A-ECC1-44A0-BB2D-2DE1F0530017";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "87A9B35A-ECC1-44A0-BB2D-2DE1F0530017";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -492,8 +508,8 @@
 		99C4BBAE15215BDF00D19A65 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer: J.C. Yang (5K9ZBWN54L)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: J.C. Yang (5K9ZBWN54L)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "OSXDev/OSXDev-Prefix.pch";
 				HEADER_SEARCH_PATHS = "${SDKROOT}/usr/include/libxml2/**";
@@ -502,8 +518,8 @@
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-lxml2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "87A9B35A-ECC1-44A0-BB2D-2DE1F0530017";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "87A9B35A-ECC1-44A0-BB2D-2DE1F0530017";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
