@@ -8,13 +8,16 @@
 
 #import <Foundation/Foundation.h>
 
+#import "NetworkHeader.h"
+
 @interface HTMLHelper : NSObject
 
 + (NSDictionary *)convertForumInfo:(NSData *)htmlData;
 + (NSDictionary *)convertTopicInfo:(NSData *)htmlData;
 + (NSDictionary *)convertThreadInfo:(NSData *)htmlData;
 + (NSDictionary *)convertPostingInfo:(NSData *)htmlData;
-+ (NSString *)getSid:(NSData *)htmlData;;
++ (NSString *)getSid:(NSData *)htmlData;
++ (BOOL)isValidData:(NSData *)htmlData requestType:(NetworkRequestType)requestType;
 
 @end
 

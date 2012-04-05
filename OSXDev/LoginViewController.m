@@ -334,9 +334,7 @@
 	[SVProgressHUD dismiss];
 	
 	if (requestType == NetworkRequestLogin) {
-		NSString *dataString = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
-		NSRange dataRange = [dataString rangeOfString:@"로그인 했습니다."];
-		if (dataRange.location == NSNotFound) {
+		if ([HTMLHelper isValidData:data requestType:requestType] == NO) {
 			[[UserInfo sharedInfo] logout];
 			[[UserInfo sharedInfo] setLoginStatus:UserInfoLoginStatusNotLoggedIn];
 			

@@ -463,9 +463,7 @@
 	
 	if (requestType == NetworkRequestViewForum) {
 		if ([UserInfo sharedInfo].loginStatus == UserInfoLoginStatusLoggedIn) {
-			NSString *dataString = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
-			NSRange dataRange = [dataString rangeOfString:@"이 포럼에서 새 글타래를 올릴 수 있습니다."];
-			if (dataRange.location != NSNotFound) {
+			if ([HTMLHelper isValidData:data requestType:requestType]) {
 				self.writeButton.enabled = YES;
 			}
 			else {

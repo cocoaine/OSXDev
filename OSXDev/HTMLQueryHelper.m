@@ -370,6 +370,35 @@
 	return sidString;
 }
 
++ (BOOL)isValidData:(NSData *)htmlData requestType:(NetworkRequestType)requestType {
+	NSString *dataString = [[[NSString alloc] initWithData:htmlData encoding:NSUTF8StringEncoding] autorelease];
+	
+	NSString *rangeString = nil;
+	switch (requestType) {
+		case NetworkRequestViewForum:
+			rangeString = @"이 포럼에서 새 글타래를 올릴 수 있습니다.";
+			break;
+			
+		case NetworkRequestLogin:
+			rangeString = @"로그인 했습니다.";
+			break;
+			
+		case NetworkRequestPosting:
+			rangeString = @"글을 올렸습니다.";
+			break;
+			
+		default:
+			break;
+	}
+	
+	NSRange dataRange = [dataString rangeOfString:rangeString];
+	if (dataRange.location == NSNotFound) {
+		return NO;
+	}
+	
+	return YES;
+}
+
 @end
 
 @implementation QueryHelper

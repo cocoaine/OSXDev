@@ -45,10 +45,10 @@
 		self.topicId = topicId;
 		
 		if (self.topicId == -1) {
-			[self.navigationItem setTitle:@"New Topic"];
+			[self.navigationItem setTitle:@"새글 올리기"];
 		}
 		else {
-			[self.navigationItem setTitle:@"Post Reply"];
+			[self.navigationItem setTitle:@"댓글 달기"];
 		}
 		
 		NetworkObject *networkObject = [[[NetworkObject alloc] initWithDelegate:self] autorelease];
@@ -221,6 +221,9 @@
 - (void)clickPosting:(id)sender {
 	self.navigationController.navigationBar.userInteractionEnabled = NO;
 	
+	[self.subjectTextField resignFirstResponder];
+	[self.messageTextView resignFirstResponder];
+	
 	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
 		CGFloat posY = 100.f;
 		if (UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation)) {
@@ -292,6 +295,14 @@
 	if (alertView.tag == kOSXDevAlertTagErrorLoading) {
 		[self clickCancel:nil];
 	}
+	else {
+		if (self.topicId == -1) {
+			[self.subjectTextField becomeFirstResponder];
+		}
+		else {
+			[self.messageTextView becomeFirstResponder];
+		}
+	}
 }
 
 // MARK: -
@@ -303,8 +314,7 @@
 	if (requestType == NetworkRequestPostingData) {
 		NSDictionary *postingInfo = [HTMLHelper convertPostingInfo:data];
 		if ([postingInfo count] == 0) {
-			// 아무런 포스팅 밸류가 없으면
-			// 무조건 오류로 간주하자.
+			// 아무런 포스팅 밸류가 없으면 무조건 오류로 간주하자.
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"불러오기 오류"
 																message:@"글쓰기 불러오기에 실패하였습니다.\n잠시 후에 다시 시도해주세요." 
 															   delegate:self
@@ -335,8 +345,21 @@
 		}
 	}
 	else if (requestType == NetworkRequestPosting) {
-		if (self.delegate) {
-			[self.delegate postingViewControllerDidFinishPosting:self];
+		if ([HTMLHelper isValidData:data requestType:requestType]) {
+			if (self.delegate) {
+				[self.delegate postingViewControllerDidFinishPosting:self];
+			}
+		}
+		else {
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"글쓰기 오류"
+																message:@"글쓰기에 실패하였습니다.\n잠시 후에 다시 시도해주세요." 
+															   delegate:self
+													  cancelButtonTitle:@"확인"
+													  otherButtonTitles:nil, nil];
+			alertView.tag = kOSXDevAlertTagError;
+			
+			[alertView show];
+			[alertView release];
 		}
 	}
 	else {
