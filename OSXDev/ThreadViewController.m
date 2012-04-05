@@ -109,7 +109,7 @@
 		infoLabel.shadowOffset = CGSizeMake(0.f, 1.f);
 		
 		infoLabel.textAlignment = UITextAlignmentCenter;
-		infoLabel.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth);
+		infoLabel.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin);
 		self.infoLabel = infoLabel;
 	}
 	
