@@ -65,24 +65,21 @@
 	
 	[self.navigationItem setRightBarButtonItem:indicatorItem animated:YES];
 	
-	UIBarButtonItem *prevPageItem = [[[UIBarButtonItem alloc] initWithTitle:@"<" 
-																	  style:UIBarButtonItemStylePlain
-																	 target:self
-																	 action:@selector(clickPrevious:)] autorelease];
+	UIBarButtonItem *prevPageItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:kOSXDevBarButtonSystemItemPrev
+																				   target:self
+																				   action:@selector(clickPrevious:)] autorelease];
 	prevPageItem.enabled = NO;
 	self.prevPageItem = prevPageItem;
 	
-	UIBarButtonItem *nextPageItem = [[[UIBarButtonItem alloc] initWithTitle:@">" 
-																	  style:UIBarButtonItemStylePlain
-																	 target:self
-																	 action:@selector(clickNext:)] autorelease];
+	UIBarButtonItem *nextPageItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:kOSXDevBarButtonSystemItemNext
+																				   target:self
+																				   action:@selector(clickNext:)] autorelease];
 	nextPageItem.enabled = NO;
 	self.nextPageItem = nextPageItem;
 	
-	UIBarButtonItem *stopPageItem = [[[UIBarButtonItem alloc] initWithTitle:@"X" 
-																	  style:UIBarButtonItemStylePlain
-																	 target:self
-																	 action:@selector(clickStop:)] autorelease];
+	UIBarButtonItem *stopPageItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
+																				   target:self
+																				   action:@selector(clickStop:)] autorelease];
 	self.stopPageItem = stopPageItem;
 	
 	UIBarButtonItem *refreshPageItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh

@@ -113,27 +113,25 @@
 		self.infoLabel = infoLabel;
 	}
 	
-	UIBarButtonItem *prevButton = [[[UIBarButtonItem alloc] initWithTitle:@"<"
-																	style:UIBarButtonItemStylePlain
-																   target:self 
-																   action:@selector(clickPrevious:)] autorelease];
+	UIBarButtonItem *prevButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:kOSXDevBarButtonSystemItemPrev
+																				 target:self 
+																				 action:@selector(clickPrevious:)] autorelease];
 	prevButton.enabled = NO;
 	self.prevButton = prevButton;
 	
-	UIBarButtonItem *nextButton = [[[UIBarButtonItem alloc] initWithTitle:@">"
-																	style:UIBarButtonItemStylePlain
-																   target:self 
-																   action:@selector(clickNext:)] autorelease];
+	UIBarButtonItem *nextButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:kOSXDevBarButtonSystemItemNext
+																				 target:self 
+																				 action:@selector(clickNext:)] autorelease];
 	nextButton.enabled = NO;
 	self.nextButton = nextButton;
 	
-	UIBarButtonItem *gotoButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
+	UIBarButtonItem *gotoButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks
 																				 target:self 
 																				 action:@selector(clickGoto:)] autorelease];
 	gotoButton.enabled = NO;
 	self.gotoButton = gotoButton;
 	
-	UIBarButtonItem *writeButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+	UIBarButtonItem *writeButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemReply
 																				  target:self 
 																				  action:@selector(clickWrite:)] autorelease];
 	writeButton.enabled = NO;

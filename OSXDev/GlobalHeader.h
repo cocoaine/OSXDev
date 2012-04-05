@@ -15,8 +15,11 @@
 #import "SVProgressHUD.h"
 #import "UserInfo.h"
 
-#define kOSXDevTopicMaxCount				25
 #define kOSXDevThreadMaxCount				10
+#define kOSXDevTopicMaxCount				25
+
+#define kOSXDevBarButtonSystemItemPrev		101
+#define kOSXDevBarButtonSystemItemNext		102
 
 #define kOSXDevAlertTagMovePage				1441
 #define kOSXDevAlertTagError				1442
