@@ -141,14 +141,14 @@
 	
 	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
 		[self setToolbarItems:[NSArray arrayWithObjects:prevButton, blankSpace, nextButton, blankSpace, gotoButton, blankSpace, writeButton, nil]
-					 animated:YES];
+					 animated:NO];
 		
 	}
 	else {
 		UIBarButtonItem *tmpInfoLabelItem = [[[UIBarButtonItem alloc] initWithCustomView:self.infoLabel] autorelease];
 		
 		[self setToolbarItems:[NSArray arrayWithObjects:prevButton, blankSpace, nextButton, blankSpace, tmpInfoLabelItem, blankSpace, gotoButton, blankSpace, writeButton, nil]
-					 animated:YES];
+					 animated:NO];
 	}
 	
 	if (self.forumId != -1 && self.topicId != -1) {

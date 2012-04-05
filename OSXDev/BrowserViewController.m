@@ -97,7 +97,7 @@
 	self.blankSpace = blankSpace;
 	
 	NSArray *items = [NSArray arrayWithObjects:prevPageItem, blankSpace, nextPageItem, blankSpace, stopPageItem, blankSpace, externalLinkItem, nil];
-	[self setToolbarItems:items animated:YES];
+	[self setToolbarItems:items animated:NO];
 	
 	UIWebView *webView = [[[UIWebView alloc] initWithFrame:self.view.bounds] autorelease];
 	webView.autoresizingMask = UIViewAutoresizingFlexibleAll;
@@ -187,7 +187,7 @@
 	[self.browserWebView stopLoading];
 	
 	NSArray *items = [NSArray arrayWithObjects:self.prevPageItem, self.blankSpace, self.nextPageItem, self.blankSpace, self.refreshPageItem, self.blankSpace, self.externalLinkItem, nil];
-	[self setToolbarItems:items animated:YES];
+	[self setToolbarItems:items animated:NO];
 }
 
 - (void)clickExternalLink:(id)sender {
@@ -207,7 +207,7 @@
 	[self.navigationItem setRightBarButtonItem:self.indicatorItem animated:YES];
 	
 	NSArray *items = [NSArray arrayWithObjects:self.prevPageItem, self.blankSpace, self.nextPageItem, self.blankSpace, self.stopPageItem, self.blankSpace, self.externalLinkItem, nil];
-	[self setToolbarItems:items animated:YES];
+	[self setToolbarItems:items animated:NO];
 	
 	if (self.browserWebView.canGoBack) {
 		[self.prevPageItem setEnabled:YES];
@@ -231,7 +231,7 @@
 	[self.indicatorView stopAnimating];
 	
 	NSArray *items = [NSArray arrayWithObjects:self.prevPageItem, self.blankSpace, self.nextPageItem, self.blankSpace, self.refreshPageItem, self.blankSpace, self.externalLinkItem, nil];
-	[self setToolbarItems:items animated:YES];
+	[self setToolbarItems:items animated:NO];
 	
 	if (self.browserWebView.canGoBack) {
 		[self.prevPageItem setEnabled:YES];
@@ -256,7 +256,7 @@
 	[self.indicatorView stopAnimating];
 	
 	NSArray *items = [NSArray arrayWithObjects:self.prevPageItem, self.blankSpace, self.nextPageItem, self.blankSpace, self.refreshPageItem, self.blankSpace, self.externalLinkItem, nil];
-	[self setToolbarItems:items animated:YES];
+	[self setToolbarItems:items animated:NO];
 	
 	if (self.browserWebView.canGoBack) {
 		[self.prevPageItem setEnabled:YES];
