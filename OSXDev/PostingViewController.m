@@ -278,7 +278,6 @@
 	
 	if (requestType == NetworkRequestPostingData) {
 		NSDictionary *postingInfo = [HTMLHelper convertPostingInfo:data];
-		NSLog(@"[postingInfo count] : %d", [postingInfo count]);
 		if ([postingInfo count] == 0) {
 			// 아무런 포스팅 밸류가 없으면
 			// 무조건 오류로 간주하자.

@@ -138,6 +138,9 @@ static UserInfo *sharedInfo = nil;
 	[[NSNotificationCenter defaultCenter] postNotificationName:kOSXDevNotificationLoginSucceed
 														object:nil
 													  userInfo:nil];
+	
+	[self setUserId:nil];
+	[self setUserPassword:nil];
 }
 
 - (void)setAutoLogin:(BOOL)autoLogin {

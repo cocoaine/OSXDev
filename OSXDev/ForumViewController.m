@@ -224,9 +224,6 @@
 }
 
 - (void)clickLogout:(id)sender {
-	[[UserInfo sharedInfo] setUserId:nil];
-	[[UserInfo sharedInfo] setUserPassword:nil];
-	
 	[[UserInfo sharedInfo] logout];
 	
 	UIBarButtonItem *loginButton = [[[UIBarButtonItem alloc] initWithTitle:@"로그인"
@@ -394,14 +391,31 @@
 		}
 	}
 	else if (requestType == NetworkRequestLogin) {
-		//settingButton에서 loginButton으로 잠시...
-		UIBarButtonItem *logoutButton = [[[UIBarButtonItem alloc] initWithTitle:@"로그아웃"
-																		  style:UIBarButtonItemStylePlain
-																		 target:self
-																		 action:@selector(clickLogout:)] autorelease];
-		[self.navigationItem setLeftBarButtonItem:logoutButton animated:NO];
-		
-		[[UserInfo sharedInfo] setLoginStatus:UserInfoLoginStatusLoggedIn];
+		NSString *dataString = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
+		NSRange dataRange = [dataString rangeOfString:@"로그인 했습니다."];
+		if (dataRange.location == NSNotFound) {
+			[[UserInfo sharedInfo] logout];
+			[[UserInfo sharedInfo] setLoginStatus:UserInfoLoginStatusNotLoggedIn];
+			
+			// login 오류.
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"로그인 오류"
+																message:@"로그인에 실패하였습니다.\n잠시 후에 다시 시도해주세요." 
+															   delegate:self
+													  cancelButtonTitle:@"확인"
+													  otherButtonTitles:nil, nil];
+			
+			[alertView show];
+			[alertView release];
+		}
+		else {
+			UIBarButtonItem *logoutButton = [[[UIBarButtonItem alloc] initWithTitle:@"로그아웃"
+																			  style:UIBarButtonItemStylePlain
+																			 target:self
+																			 action:@selector(clickLogout:)] autorelease];
+			[self.navigationItem setLeftBarButtonItem:logoutButton animated:NO];
+			
+			[[UserInfo sharedInfo] setLoginStatus:UserInfoLoginStatusLoggedIn];
+		}
 		
 		if ([self.connectionInfo objectForKey:kOSXDevConnectionInfoKeyReqLogin]) {
 			[self.connectionInfo removeObjectForKey:kOSXDevConnectionInfoKeyReqLogin];
@@ -446,6 +460,9 @@
 		}
 	}
 	else if (requestType == NetworkRequestLogin) {
+		[[UserInfo sharedInfo] logout];
+		[[UserInfo sharedInfo] setLoginStatus:UserInfoLoginStatusNotLoggedIn];
+		
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"로그인 오류"
 															message:@"로그인에 실패하였습니다.\n좌측 상단 로그인 버튼으로\n재시도 해주세요." 
 														   delegate:self
@@ -458,6 +475,14 @@
 		if ([self.connectionInfo objectForKey:kOSXDevConnectionInfoKeyReqLogin]) {
 			[self.connectionInfo removeObjectForKey:kOSXDevConnectionInfoKeyReqLogin];
 		}
+		
+		[SVProgressHUD showInView:self.view status:@"목록 불러오는 중..."];
+		
+		[self.indicatorView startAnimating];
+		[self.navigationItem setRightBarButtonItem:self.indicatorItem animated:YES];
+		
+		NSString *connectionIdentifier = [self.networkObject forumList];
+		[self.connectionInfo setObject:connectionIdentifier forKey:kOSXDevConnectionInfoKeyReqForum];
 	}
 	else {
 		

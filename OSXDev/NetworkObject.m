@@ -505,10 +505,12 @@
 			// 로그인 처리
 			NSString *sidString = [HTMLHelper getSid:receivedData];
 			
-			NSMutableDictionary *loginInfo = [NSMutableDictionary dictionaryWithCapacity:1];
-			[loginInfo setObject:sidString forKey:@"sid"];
-			
-			[[NSNotificationCenter defaultCenter] postNotificationName:kOSXDevNotificationLoginSucceed object:nil userInfo:loginInfo];
+			if (sidString != nil) {
+				NSMutableDictionary *loginInfo = [NSMutableDictionary dictionaryWithCapacity:1];
+				[loginInfo setObject:sidString forKey:@"sid"];
+				
+				[[NSNotificationCenter defaultCenter] postNotificationName:kOSXDevNotificationLoginSucceed object:nil userInfo:loginInfo];
+			}
 		}
 		
 		if ([self isValidDelegateForSelector:@selector(requestSucceed:forRequest:requestType:)]) {

@@ -107,8 +107,7 @@
 // MARK: -
 // MARK: << Private methods >>
 - (void)clickCancel:(id)sender {
-	[[UserInfo sharedInfo] setUserId:nil];
-	[[UserInfo sharedInfo] setUserPassword:nil];
+	[[UserInfo sharedInfo] logout];
 	
 	if (self.delegate && [self.delegate respondsToSelector:@selector(loginViewControllerDidCancel:)]) {
 		[self.delegate loginViewControllerDidCancel:self];
@@ -328,6 +327,9 @@
 		NSString *dataString = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
 		NSRange dataRange = [dataString rangeOfString:@"로그인 했습니다."];
 		if (dataRange.location == NSNotFound) {
+			[[UserInfo sharedInfo] logout];
+			[[UserInfo sharedInfo] setLoginStatus:UserInfoLoginStatusNotLoggedIn];
+			
 			// login 오류.
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"로그인 오류"
 																message:@"로그인에 실패하였습니다.\n잠시 후에 다시 시도해주세요." 
@@ -353,6 +355,9 @@
 
 - (void)requestFailed:(NSString *)connectionIdentifier requestType:(NetworkRequestType)requestType error:(NSError *)error {
 	if (requestType == NetworkRequestLogin) {
+		[[UserInfo sharedInfo] logout];
+		[[UserInfo sharedInfo] setLoginStatus:UserInfoLoginStatusNotLoggedIn];
+		
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"로그인 오류"
 															message:@"로그인에 실패하였습니다.\n잠시 후에 다시 시도해주세요." 
 														   delegate:self
