@@ -136,7 +136,19 @@
 	[self.navigationItem setRightBarButtonItem:postingButton animated:YES];
 	
 	self.navigationController.navigationBar.userInteractionEnabled = NO;
-	[SVProgressHUD showInView:self.view status:@"글쓰기 불러오는 중..." networkIndicator:NO posY:100.f];
+	
+	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+		CGFloat posY = 100.f;
+		if (UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation)) {
+			posY = 60.f;
+		}
+		
+		[SVProgressHUD showInView:self.view status:@"글쓰기 불러오는 중..." networkIndicator:NO posY:posY];
+	}
+	else {
+		[SVProgressHUD showInView:self.view status:@"글쓰기 불러오는 중..."];
+	}
+	
 	self.connectionIdentifier = [self.networkObject postingDataWithForumId:self.forumId
 																   topicId:self.topicId];
 }
@@ -208,7 +220,19 @@
 
 - (void)clickPosting:(id)sender {
 	self.navigationController.navigationBar.userInteractionEnabled = NO;
-	[SVProgressHUD showInView:self.view status:@"글 등록중..." networkIndicator:NO posY:100.f];
+	
+	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+		CGFloat posY = 100.f;
+		if (UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation)) {
+			posY = 60.f;
+		}
+		
+		[SVProgressHUD showInView:self.view status:@"글 등록 중..." networkIndicator:NO posY:posY];
+	}
+	else {
+		[SVProgressHUD showInView:self.view status:@"글 등록 중..."];
+	}
+	
 	self.connectionIdentifier= [self.networkObject postingWithSubject:self.subjectTextField.text
 															  message:self.messageTextView.text
 															  forumId:self.forumId

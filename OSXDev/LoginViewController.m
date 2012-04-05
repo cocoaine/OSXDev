@@ -118,7 +118,6 @@
 }
 
 - (void)startLoginRequest {
-	NSLog(@"startLoginRequest called");
 	[self.idTextField resignFirstResponder];
 	[self.pwTextField resignFirstResponder];
 	
@@ -130,7 +129,18 @@
 		[[UserInfo sharedInfo] setUserPassword:self.pwTextField.text];
 	}
 	
-	[SVProgressHUD showInView:self.view status:@"로그인 중..." networkIndicator:NO posY:100.f];
+	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+		CGFloat posY = 100.f;
+		if (UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation)) {
+			posY = 60.f;
+		}
+		
+		[SVProgressHUD showInView:self.view status:@"로그인 중..." networkIndicator:NO posY:posY];
+	}
+	else {
+		[SVProgressHUD showInView:self.view status:@"로그인 중..."];
+	}
+	
 	self.connectionIdentifier = [self.networkObject login];
 }
 
