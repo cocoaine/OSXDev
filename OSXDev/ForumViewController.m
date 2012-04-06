@@ -119,6 +119,7 @@
 	
 	[self.navigationController setToolbarHidden:YES animated:YES];
 	
+	/*
 	UIBarButtonItem *item = nil;
 	if ([UserInfo sharedInfo].loginStatus == UserInfoLoginStatusLoggedIn) {
 		item = [[[UIBarButtonItem alloc] initWithTitle:@"로그아웃"
@@ -134,6 +135,7 @@
 	}
 	
 	[self.navigationItem setLeftBarButtonItem:item animated:NO];
+	 */
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -395,6 +397,12 @@
 			[[UserInfo sharedInfo] logout];
 			[[UserInfo sharedInfo] setLoginStatus:UserInfoLoginStatusNotLoggedIn];
 			
+			UIBarButtonItem *loginButton = [[[UIBarButtonItem alloc] initWithTitle:@"로그인"
+																			 style:UIBarButtonItemStylePlain
+																			target:self
+																			action:@selector(clickLogin:)] autorelease];
+			[self.navigationItem setLeftBarButtonItem:loginButton animated:NO];
+			
 			// login 오류.
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"로그인 오류"
 																message:@"로그인에 실패하였습니다.\n잠시 후에 다시 시도해주세요." 
@@ -460,6 +468,12 @@
 	else if (requestType == NetworkRequestLogin) {
 		[[UserInfo sharedInfo] logout];
 		[[UserInfo sharedInfo] setLoginStatus:UserInfoLoginStatusNotLoggedIn];
+		
+		UIBarButtonItem *loginButton = [[[UIBarButtonItem alloc] initWithTitle:@"로그인"
+																		 style:UIBarButtonItemStylePlain
+																		target:self
+																		action:@selector(clickLogin:)] autorelease];
+		[self.navigationItem setLeftBarButtonItem:loginButton animated:NO];
 		
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"로그인 오류"
 															message:@"로그인에 실패하였습니다.\n좌측 상단 로그인 버튼으로\n재시도 해주세요." 
