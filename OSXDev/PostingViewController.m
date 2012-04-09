@@ -141,7 +141,7 @@
 			posY = 60.f;
 		}
 		
-		[SVProgressHUD showInView:[UIApplication sharedApplication].keyWindow 
+		[SVProgressHUD showInView:self.view
 						   status:@"글쓰기 불러오는 중..." 
 				 networkIndicator:NO 
 							 posY:posY 
