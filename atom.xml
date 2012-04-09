@@ -4,7 +4,7 @@
   <title><![CDATA[OSXDev for iPhone/iPad]]></title>
   <link href="http://cocoaine.github.com/OSXDev/atom.xml" rel="self"/>
   <link href="http://cocoaine.github.com/OSXDev/"/>
-  <updated>2012-04-09T15:42:08+09:00</updated>
+  <updated>2012-04-09T15:49:03+09:00</updated>
   <id>http://cocoaine.github.com/OSXDev/</id>
   <author>
     <name><![CDATA[J.C. Yang]]></name>
@@ -53,11 +53,6 @@
 <li>사용자 프로필 사진 보여주기</li>
 </ul>
 
-
-<blockquote><p>참고 :
-현재 소스를 빌드하면 나오는 validity error는
-HTML 문서 형식 상 나오는 어쩔 수 없는 구조로 보여지며
-사용시에는 아무 문제가 없으니 양해 부탁드립니다.</p></blockquote>
 
 <p>모쪼록, 잉여력이 남는대로 틈틈히 작업하겠습니다.
 감사합니다!</p>
