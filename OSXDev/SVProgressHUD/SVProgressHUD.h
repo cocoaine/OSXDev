@@ -27,6 +27,7 @@ maskType:(SVProgressHUDMaskType)    -> set whether to allow user interactions wh
 + (void)showInView:(UIView*)view;
 + (void)showInView:(UIView*)view status:(NSString*)string;
 + (void)showInView:(UIView*)view status:(NSString*)string networkIndicator:(BOOL)show;
++ (void)showInView:(UIView*)view status:(NSString*)string maskType:(SVProgressHUDMaskType)maskType;
 + (void)showInView:(UIView*)view status:(NSString*)string networkIndicator:(BOOL)show posY:(CGFloat)posY;
 + (void)showInView:(UIView*)view status:(NSString*)string networkIndicator:(BOOL)show posY:(CGFloat)posY maskType:(SVProgressHUDMaskType)maskType;
 

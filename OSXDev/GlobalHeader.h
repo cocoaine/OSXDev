@@ -15,6 +15,8 @@
 #import "SVProgressHUD.h"
 #import "UserInfo.h"
 
+#define kOSXDevResetValue					@"resetValue"
+
 #define kOSXDevThreadMaxCount				10
 #define kOSXDevTopicMaxCount				25
 

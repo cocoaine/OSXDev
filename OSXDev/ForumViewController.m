@@ -89,7 +89,9 @@
 	NSString *connectionIdentifier = nil;
 	if ([[UserInfo sharedInfo] userId] != nil && [[UserInfo sharedInfo] userPassword] != nil &&
 		[UserInfo sharedInfo].autoLogin) {
-		[SVProgressHUD showInView:self.view status:@"로그인중..."];
+		[SVProgressHUD showInView:[UIApplication sharedApplication].keyWindow 
+						   status:@"로그인중..." 
+						 maskType:SVProgressHUDMaskTypeClear];
 		
 		connectionIdentifier = [self.networkObject login];
 		[self.connectionInfo setObject:connectionIdentifier forKey:kOSXDevConnectionInfoKeyReqLogin];
@@ -101,7 +103,9 @@
 																		action:@selector(clickLogin:)] autorelease];
 		[self.navigationItem setLeftBarButtonItem:loginButton animated:NO];
 		
-		[SVProgressHUD showInView:self.view status:@"목록 불러오는 중..."];
+		[SVProgressHUD showInView:[UIApplication sharedApplication].keyWindow 
+						   status:@"목록 불러오는 중..." 
+						 maskType:SVProgressHUDMaskTypeClear];
 		
 		connectionIdentifier = [self.networkObject forumList];
 		[self.connectionInfo setObject:connectionIdentifier forKey:kOSXDevConnectionInfoKeyReqForum];
@@ -119,7 +123,6 @@
 	
 	[self.navigationController setToolbarHidden:YES animated:YES];
 	
-	/*
 	UIBarButtonItem *item = nil;
 	if ([UserInfo sharedInfo].loginStatus == UserInfoLoginStatusLoggedIn) {
 		item = [[[UIBarButtonItem alloc] initWithTitle:@"로그아웃"
@@ -135,7 +138,6 @@
 	}
 	
 	[self.navigationItem setLeftBarButtonItem:item animated:NO];
-	 */
 }
 
 - (void)viewDidAppear:(BOOL)animated {

@@ -26,6 +26,14 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+	BOOL resetValue = [[NSUserDefaults standardUserDefaults] boolForKey:kOSXDevResetValue];
+	if (resetValue) {
+		[[UserInfo sharedInfo] logout];
+		
+		[[NSUserDefaults standardUserDefaults] setBool:NO forKey:kOSXDevResetValue];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}
+	
 	// 시작할 때 쿠키 정리하기.
 	NSHTTPCookie *cookie;
 	NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];

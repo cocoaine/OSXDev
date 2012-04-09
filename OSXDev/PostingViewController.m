@@ -135,18 +135,22 @@
 																					action:@selector(clickPosting:)] autorelease];
 	[self.navigationItem setRightBarButtonItem:postingButton animated:YES];
 	
-	self.navigationController.navigationBar.userInteractionEnabled = NO;
-	
 	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
 		CGFloat posY = 100.f;
 		if (UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation)) {
 			posY = 60.f;
 		}
 		
-		[SVProgressHUD showInView:self.view status:@"글쓰기 불러오는 중..." networkIndicator:NO posY:posY];
+		[SVProgressHUD showInView:[UIApplication sharedApplication].keyWindow 
+						   status:@"글쓰기 불러오는 중..." 
+				 networkIndicator:NO 
+							 posY:posY 
+						 maskType:SVProgressHUDMaskTypeClear];
 	}
 	else {
-		[SVProgressHUD showInView:self.view status:@"글쓰기 불러오는 중..."];
+		[SVProgressHUD showInView:self.view 
+						   status:@"글쓰기 불러오는 중..." 
+						 maskType:SVProgressHUDMaskTypeClear];
 	}
 	
 	self.connectionIdentifier = [self.networkObject postingDataWithForumId:self.forumId
@@ -219,8 +223,6 @@
 }
 
 - (void)clickPosting:(id)sender {
-	self.navigationController.navigationBar.userInteractionEnabled = NO;
-	
 	[self.subjectTextField resignFirstResponder];
 	[self.messageTextView resignFirstResponder];
 	
@@ -230,10 +232,10 @@
 			posY = 60.f;
 		}
 		
-		[SVProgressHUD showInView:self.view status:@"글 등록 중..." networkIndicator:NO posY:posY];
+		[SVProgressHUD showInView:self.view status:@"글 등록 중..." networkIndicator:NO posY:posY maskType:SVProgressHUDMaskTypeClear];
 	}
 	else {
-		[SVProgressHUD showInView:self.view status:@"글 등록 중..."];
+		[SVProgressHUD showInView:self.view status:@"글 등록 중..." maskType:SVProgressHUDMaskTypeClear];
 	}
 	
 	self.connectionIdentifier= [self.networkObject postingWithSubject:self.subjectTextField.text
@@ -308,7 +310,6 @@
 // MARK: -
 // MARK: << NetworkObjectDelegate >>
 - (void)requestSucceed:(NSData *)data forRequest:(NSString *)connectionIdentifier requestType:(NetworkRequestType)requestType {
-	self.navigationController.navigationBar.userInteractionEnabled = YES;
 	[SVProgressHUD dismiss];
 	
 	if (requestType == NetworkRequestPostingData) {
@@ -370,7 +371,6 @@
 }
 
 - (void)requestFailed:(NSString *)connectionIdentifier requestType:(NetworkRequestType)requestType error:(NSError *)error {
-	self.navigationController.navigationBar.userInteractionEnabled = YES;
 	[SVProgressHUD dismiss];
 	
 	if (requestType == NetworkRequestPostingData) {
