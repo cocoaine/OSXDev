@@ -207,6 +207,9 @@
 }
 
 + (NSDictionary *)convertThreadInfo:(NSData *)htmlData {
+	// 전반적인 thread를 converting하는 루틴은 시간 날때 변경할 예정.
+	// template를 만들어 좀 더 예쁘게 꾸미고 보기 좋게 할 예정.
+	
 	NSMutableDictionary *threadInfo = [NSMutableDictionary dictionaryWithCapacity:3];
 	
 	CXMLDocument *htmlParser = [[[CXHTMLDocument alloc] initWithXHTMLData:htmlData
@@ -253,7 +256,9 @@
                 if ([[node name] isEqualToString:@"ul"] == NO) {
 					NSString *xmlString = [node XMLString];
 					if ([xmlString rangeOfString:@"<img"].location != NSNotFound) {
-						if ([xmlString rangeOfString:@"icon_post_target.png"].location == NSNotFound) {
+						if ([xmlString rangeOfString:@"/smile/"].location == NSNotFound && 
+							[xmlString rangeOfString:@"/smilies/"].location == NSNotFound && 
+							[xmlString rangeOfString:@"/imageset/"].location == NSNotFound) {
 							xmlString = [xmlString stringByReplacingOccurrencesOfString:@"<img" withString:@"<img style=\"width:100%;\""];
 						}
 						
