@@ -4,7 +4,7 @@
   <title><![CDATA[OSXDev for iPhone/iPad]]></title>
   <link href="http://cocoaine.github.com/OSXDev/atom.xml" rel="self"/>
   <link href="http://cocoaine.github.com/OSXDev/"/>
-  <updated>2012-04-09T17:51:38+09:00</updated>
+  <updated>2012-04-09T19:11:37+09:00</updated>
   <id>http://cocoaine.github.com/OSXDev/</id>
   <author>
     <name><![CDATA[J.C. Yang]]></name>
@@ -20,9 +20,11 @@
     <id>http://cocoaine.github.com/OSXDev/blog/2012/04/09/1-dot-0-release</id>
     <content type="html"><![CDATA[<p>안녕하세요.</p>
 
-<p>드디어 잉여력을 발휘하며 개발해온 OSXDev가
+<p>잉여력을 발휘하며 개발해온 OSXDev가
 나름, 스스로 1.0 버전을 달아도 괜찮다라고 판단하여
 1.0 버전을 릴리즈하였습니다.</p>
+
+<p>이런저런 부족한 점들이 많으니 많은 피드백과 관심 부탁드리겠습니다. :)</p>
 
 <p>현재까지 구현한 주요 기능과 추후 구현할 기능은 다음과 같습니다.</p>
 
