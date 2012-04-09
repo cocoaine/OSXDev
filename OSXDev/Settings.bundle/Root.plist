@@ -7,6 +7,8 @@
 		<dict>
 			<key>Title</key>
 			<string>설정</string>
+			<key>FooterText</key>
+			<string>키체인에 저장된 아이디와 패스워드, 자동 로그인을 초기화합니다.</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
