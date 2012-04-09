@@ -89,7 +89,7 @@
 	NSString *connectionIdentifier = nil;
 	if ([[UserInfo sharedInfo] userId] != nil && [[UserInfo sharedInfo] userPassword] != nil &&
 		[UserInfo sharedInfo].autoLogin) {
-		[SVProgressHUD showInView:[UIApplication sharedApplication].keyWindow 
+		[SVProgressHUD showInView:self.view
 						   status:@"로그인중..." 
 						 maskType:SVProgressHUDMaskTypeClear];
 		
@@ -103,7 +103,7 @@
 																		action:@selector(clickLogin:)] autorelease];
 		[self.navigationItem setLeftBarButtonItem:loginButton animated:NO];
 		
-		[SVProgressHUD showInView:[UIApplication sharedApplication].keyWindow 
+		[SVProgressHUD showInView:self.view
 						   status:@"목록 불러오는 중..." 
 						 maskType:SVProgressHUDMaskTypeClear];
 		
