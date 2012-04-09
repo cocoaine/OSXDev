@@ -251,7 +251,18 @@
             
             for (CXMLNode *node in [element children]) {
                 if ([[node name] isEqualToString:@"ul"] == NO) {
-                    [htmlString appendString:[node XMLString]];
+					NSString *xmlString = [node XMLString];
+					if ([xmlString rangeOfString:@"<img"].location != NSNotFound) {
+						if ([xmlString rangeOfString:@"icon_post_target.png"].location == NSNotFound) {
+							xmlString = [xmlString stringByReplacingOccurrencesOfString:@"<img" withString:@"<img style=\"width:100%;\""];
+						}
+						
+						if ([xmlString rangeOfString:@"첨부파일"].location != NSNotFound) {
+							xmlString = [xmlString stringByReplacingOccurrencesOfString:@"첨부파일" withString:@"<br /><li>첨부파일</li>"];
+						}
+					}
+					
+                    [htmlString appendString:xmlString];
                 }
             }
 			
@@ -264,7 +275,7 @@
 	[htmlString appendString:@"</html>"];
 	
 	NSString *tmpString = htmlString;
-	NSString *regEx = @"</?(?i:a|embed|object|frameset|frame|iframe|meta|link|input)(.|\n)*?>";
+	NSString *regEx = @"</?(?i:a|embed|object|frameset|frame|iframe|meta|link|input|dd|dt)(.|\n)*?>";
 	NSRange r;
 	while ((r = [tmpString rangeOfString:regEx options:NSRegularExpressionSearch]).location != NSNotFound) {
 		tmpString = [tmpString stringByReplacingCharactersInRange:r withString:@""];
