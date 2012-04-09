@@ -33,12 +33,13 @@
 		[[NSUserDefaults standardUserDefaults] setBool:NO forKey:kOSXDevResetValue];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 	}
-	
-	// 시작할 때 쿠키 정리하기.
-	NSHTTPCookie *cookie;
-	NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-	for (cookie in [storage cookies]) {
-		[storage deleteCookie:cookie];
+	else {
+		// 시작할 때 쿠키 정리하기.
+		NSHTTPCookie *cookie;
+		NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+		for (cookie in [storage cookies]) {
+			[storage deleteCookie:cookie];
+		}
 	}
 	
 	self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
