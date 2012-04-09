@@ -6,9 +6,9 @@
 	<array>
 		<dict>
 			<key>Title</key>
-			<string>설정</string>
+			<string>Setting_Title</string>
 			<key>FooterText</key>
-			<string>키체인에 저장된 아이디와 패스워드, 자동 로그인을 초기화합니다.</string>
+			<string>Setting_Footer</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -18,7 +18,7 @@
 			<key>Key</key>
 			<string>resetValue</string>
 			<key>Title</key>
-			<string>계정 초기화</string>
+			<string>Reset_Title</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
