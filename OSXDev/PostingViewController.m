@@ -268,8 +268,15 @@
 	}
 	
 	NSString *message = self.messageTextView.text;
-	if ([signature length] > 0) {
-		message = [message stringByAppendingFormat:@"\n\n%@", signature];
+	if (signature != nil) {
+		if ([signature length] > 0) {
+			NSLog(@"message with signature...");
+			message = [message stringByAppendingFormat:@"\n\n%@", signature];
+		}
+		else {
+			// only message
+			NSLog(@"only message");
+		}
 	}
 	
 	self.connectionIdentifier= [self.networkObject postingWithSubject:self.subjectTextField.text
