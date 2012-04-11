@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Release | OSXDev for iPhone/iPad]]></title>
   <link href="http://cocoaine.github.com/OSXDev/blog/categories/release/atom.xml" rel="self"/>
   <link href="http://cocoaine.github.com/OSXDev/"/>
-  <updated>2012-04-10T17:16:14+09:00</updated>
+  <updated>2012-04-11T21:59:49+09:00</updated>
   <id>http://cocoaine.github.com/OSXDev/</id>
   <author>
     <name><![CDATA[J.C. Yang]]></name>
@@ -41,6 +41,7 @@
 <li>토픽 페이지 넘기기, 해당 페이지 이동</li>
 <li>댓글 페이지 넘기기, 해당 페이지 이동</li>
 <li>로그인 관련 리셋을 위한 세팅 번들 추가</li>
+<li>서명 기능 (세팅 번들)</li>
 <li>링크 클릭시 내부 브라우저로 보여주기 (사파리로 열기 포함)</li>
 </ul>
 
