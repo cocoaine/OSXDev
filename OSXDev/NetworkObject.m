@@ -387,6 +387,9 @@
 		[theRequest setValue:kMobileSafariUserAgent forHTTPHeaderField:@"User-Agent"];
 	}
 	
+	// start network indicator
+	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+	
     AsyncURLConnection *connection = [[AsyncURLConnection alloc] initWithRequest:theRequest 
 																		delegate:self 
 																	 requestType:requestType];
@@ -464,6 +467,9 @@
 }
 
 - (void)connection:(AsyncURLConnection *)connection didFailWithError:(NSError *)error {
+	// stop network indicator
+	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+	
 	NSString *connectionIdentifier = [connection identifier];
 	
 	// Failed!!!
@@ -476,7 +482,10 @@
     [_connections removeObjectForKey:connectionIdentifier];
 }
 
-- (void)connectionDidFinishLoading:(AsyncURLConnection *)connection {	
+- (void)connectionDidFinishLoading:(AsyncURLConnection *)connection {
+	// stop network indicator
+	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+	
     NSInteger statusCode = [[connection response] statusCode];
 	
     if (statusCode >= 400) {
