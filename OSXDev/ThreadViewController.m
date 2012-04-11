@@ -498,7 +498,10 @@
 		}
 		
 		self.gotoButton.enabled = YES;
-		self.writeButton.enabled = YES;
+		
+		if ([UserInfo sharedInfo].loginStatus == UserInfoLoginStatusLoggedIn) {
+			self.writeButton.enabled = YES;
+		}
 		
 		[self.detailWebView loadHTMLString:htmlString
 								   baseURL:[NSURL URLWithString:kOSXDevURLPrefix]];

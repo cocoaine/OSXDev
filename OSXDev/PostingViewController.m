@@ -223,6 +223,29 @@
 }
 
 - (void)clickPosting:(id)sender {
+	if ([[self.subjectTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] == 0 || 
+		[[self.messageTextView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] == 0) {
+		NSString *alertMessage = nil;
+		if ([[self.messageTextView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] == 0) {
+			alertMessage = @"글 내용이 비어있습니다.\n다시 한 번 확인해주세요.";
+		}
+		else {
+			alertMessage = @"제목이 비어있습니다.\n다시 한 번 확인해주세요.";
+		}
+		
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"글쓰기 오류"
+															message:alertMessage
+														   delegate:self
+												  cancelButtonTitle:@"확인"
+												  otherButtonTitles:nil, nil];
+		alertView.tag = kOSXDevAlertTagError;
+		
+		[alertView show];
+		[alertView release];
+		
+		return;
+	}
+	
 	[self.subjectTextField resignFirstResponder];
 	[self.messageTextView resignFirstResponder];
 	
@@ -238,8 +261,19 @@
 		[SVProgressHUD showInView:self.view status:@"글 등록 중..." maskType:SVProgressHUDMaskTypeClear];
 	}
 	
+	NSString *signature = nil;
+	if ([[NSUserDefaults standardUserDefaults] stringForKey:kOSXDevSignatureValue]) {
+		signature = [[[NSUserDefaults standardUserDefaults] stringForKey:kOSXDevSignatureValue]
+					 stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+	}
+	
+	NSString *message = self.messageTextView.text;
+	if ([signature length] > 0) {
+		message = [message stringByAppendingFormat:@"\n\n%@", signature];
+	}
+	
 	self.connectionIdentifier= [self.networkObject postingWithSubject:self.subjectTextField.text
-															  message:self.messageTextView.text
+															  message:message
 															  forumId:self.forumId
 															  topicId:self.topicId
 													   topicCurPostId:self.topicCurPostId

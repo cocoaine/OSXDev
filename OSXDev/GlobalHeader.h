@@ -16,6 +16,7 @@
 #import "UserInfo.h"
 
 #define kOSXDevResetValue					@"resetValue"
+#define kOSXDevSignatureValue				@"signatureValue"
 
 #define kOSXDevThreadMaxCount				10
 #define kOSXDevTopicMaxCount				25
