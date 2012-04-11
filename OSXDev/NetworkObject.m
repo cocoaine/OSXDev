@@ -11,17 +11,20 @@
 #define kMobileSafariUserAgent		@"Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_0 like Mac OS X; en-us) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8A293 Safari/6531.22.7"
 #define kOSXDevMultipartBoundary	@"0xKhTmLbOuNdArY"
 
+#define kOSXDevHTTPMethodGet		@"GET"
+#define kOSXDevHTTPMethodPost		@"POST"
+#define kOSXDevHTTPMethodMultipart	@"MULTIPART"
+
 @interface NetworkObject (PrivateMethods)
 - (BOOL)isValidDelegateForSelector:(SEL)selector;
 - (NSURL *)getURLWithType:(NetworkURLType)urlType parameters:(NSDictionary *)params;
 - (NSString *)encodeURL:(NSString *)string;
 - (NSData *)setPostBody:(NSDictionary *)postParams;
 - (NSData *)setMultipartBody:(NSDictionary *)postParams;
-- (NSString *)sendRequest:(NSMutableURLRequest *)theRequest 
-			  requestType:(NetworkRequestType)requestType 
-				 isMobile:(BOOL)isMobile;
+- (NSString *)sendRequestWithMethod:(NSString *)method url:(NSURL *)url queryParameters:(NSDictionary *)queryParams
+						requestType:(NetworkRequestType)requestType isMobile:(BOOL)isMobile;
 - (void)loginSucceedNotificationCalled:(NSNotification *)notification;
-- (void)cookieChangedNotificationCalled:(NSNotification *)notification;
+//- (void)cookieChangedNotificationCalled:(NSNotification *)notification;
 @end
 
 @interface NetworkObject (NSURLConnectionDelegate)
@@ -106,11 +109,9 @@
 	[params setObject:[NSString stringWithFormat:@"%@", @"1"] forKey:@"f"];
 	
 	NSURL *url = [self getURLWithType:NetworkURLForum parameters:params];
-	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
-														   cachePolicy:NSURLRequestUseProtocolCachePolicy
-													   timeoutInterval:kOSXDevURLRequestTimeout];
-	// 모바일 페이지는 content desc가 없다...
-	return [self sendRequest:request requestType:NetworkRequestForumList isMobile:NO];
+	
+	return [self sendRequestWithMethod:kOSXDevHTTPMethodGet url:url queryParameters:nil
+						   requestType:NetworkRequestForumList isMobile:NO];
 }
 
 - (NSString *)topicListWithForumId:(NSInteger)forumId start:(NSInteger)start {
@@ -119,11 +120,9 @@
 	[params setObject:[NSString stringWithFormat:@"%d", start] forKey:@"start"];
 	
 	NSURL *url = [self getURLWithType:NetworkURLForum parameters:params];
-	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
-														   cachePolicy:NSURLRequestUseProtocolCachePolicy
-													   timeoutInterval:kOSXDevURLRequestTimeout];
 	
-	return [self sendRequest:request requestType:NetworkRequestViewForum isMobile:NO];
+	return [self sendRequestWithMethod:kOSXDevHTTPMethodGet url:url queryParameters:nil
+						   requestType:NetworkRequestViewForum isMobile:NO];
 }
 
 - (NSString *)threadListWithForumId:(NSInteger)forumId topicId:(NSInteger)topicId start:(NSInteger)start {
@@ -133,11 +132,9 @@
 	[params setObject:[NSString stringWithFormat:@"%d", start] forKey:@"start"];
 	
 	NSURL *url = [self getURLWithType:NetworkURLTopic parameters:params];
-	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
-														   cachePolicy:NSURLRequestUseProtocolCachePolicy
-													   timeoutInterval:kOSXDevURLRequestTimeout];
 	
-	return [self sendRequest:request requestType:NetworkRequestViewTopic isMobile:NO];
+	return [self sendRequestWithMethod:kOSXDevHTTPMethodGet url:url queryParameters:nil
+						   requestType:NetworkRequestViewTopic isMobile:NO];
 }
 
 - (NSString *)login {
@@ -146,21 +143,13 @@
 	
 	NSURL *url = [self getURLWithType:NetworkURLLogin parameters:params];
 	
-	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
-														   cachePolicy:NSURLRequestUseProtocolCachePolicy
-													   timeoutInterval:kOSXDevURLRequestTimeout];
-	
 	NSMutableDictionary *postParams = [NSMutableDictionary dictionaryWithCapacity:0];
 	[postParams setObject:[NSString stringWithFormat:@"%@", [[UserInfo sharedInfo] userId]] forKey:@"username"];
 	[postParams setObject:[NSString stringWithFormat:@"%@", [[UserInfo sharedInfo] userPassword]] forKey:@"password"];
-//	[postParams setObject:[NSString stringWithFormat:@"%@", @"7e793737b6a4d0027c590af793a2100c"] forKey:@"sid"]; // 일단 임시로.
 	
-	if ([UserInfo sharedInfo].autoLogin) {
-		[postParams setObject:[NSString stringWithFormat:@"%@", @"on"] forKey:@"autologin"];
-	}
-	else {
-		[postParams setObject:[NSString stringWithFormat:@"%@", @"off"] forKey:@"autologin"];
-	}
+	// 자동 로그인은 클라이언트에서 관리한다.
+	// 곧, 여기에서는 default off로 준다.
+	[postParams setObject:[NSString stringWithFormat:@"%@", @"off"] forKey:@"autologin"];
 	
 	if ([UserInfo sharedInfo].viewOnline) {
 		[postParams setObject:[NSString stringWithFormat:@"%@", @"on"] forKey:@"viewonline"];
@@ -172,33 +161,29 @@
 	[postParams setObject:[NSString stringWithFormat:@"%@", @"index.php"] forKey:@"redirect"];
 	[postParams setObject:[NSString stringWithFormat:@"로그인"] forKey:@"login"];
 	
-	[request setHTTPMethod:@"POST"];
-	[request setHTTPBody:[self setPostBody:postParams]];
-	
-	return [self sendRequest:request requestType:NetworkRequestLogin isMobile:YES];
+	return [self sendRequestWithMethod:kOSXDevHTTPMethodPost url:url queryParameters:postParams
+						   requestType:NetworkRequestLogin isMobile:NO];
 }
 
 - (NSString *)postingDataWithForumId:(NSInteger)forumId topicId:(NSInteger)topicId {
-	NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:1];
+	NSMutableDictionary *urlParams = [NSMutableDictionary dictionaryWithCapacity:1];
 	
 	if (topicId == -1) {
 		// topic id가 -1이면 new post
-		[params setObject:[NSString stringWithFormat:@"%@", @"post"] forKey:@"mode"];
+		[urlParams setObject:[NSString stringWithFormat:@"%@", @"post"] forKey:@"mode"];
 	}
 	else {
 		// reply
-		[params setObject:[NSString stringWithFormat:@"%@", @"reply"] forKey:@"mode"];
-		[params setObject:[NSString stringWithFormat:@"%d", topicId] forKey:@"t"];
+		[urlParams setObject:[NSString stringWithFormat:@"%@", @"reply"] forKey:@"mode"];
+		[urlParams setObject:[NSString stringWithFormat:@"%d", topicId] forKey:@"t"];
 	}
 	
-	[params setObject:[NSString stringWithFormat:@"%d", forumId] forKey:@"f"];
+	[urlParams setObject:[NSString stringWithFormat:@"%d", forumId] forKey:@"f"];
 	
-	NSURL *url = [self getURLWithType:NetworkURLPostingData parameters:params];
-	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
-														   cachePolicy:NSURLRequestUseProtocolCachePolicy
-													   timeoutInterval:kOSXDevURLRequestTimeout];
+	NSURL *url = [self getURLWithType:NetworkURLPostingData parameters:urlParams];
 	
-	return [self sendRequest:request requestType:NetworkRequestPostingData isMobile:NO];
+	return [self sendRequestWithMethod:kOSXDevHTTPMethodGet url:url queryParameters:nil
+						   requestType:NetworkRequestPostingData isMobile:NO];
 }
 
 - (NSString *)postingWithSubject:(NSString *)subject message:(NSString *)message forumId:(NSInteger)forumId topicId:(NSInteger)topicId topicCurPostId:(NSString *)topicCurPostId lastClick:(NSString *)lastClick creationTime:(NSString *)creationTime formToken:(NSString *)formToken {
@@ -217,12 +202,6 @@
 	[params setObject:[NSString stringWithFormat:@"%d", forumId] forKey:@"f"];
 	
 	NSURL *url = [self getURLWithType:NetworkURLPosting parameters:params];
-	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
-														   cachePolicy:NSURLRequestUseProtocolCachePolicy
-													   timeoutInterval:kOSXDevURLRequestTimeout];
-	
-	NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", kOSXDevMultipartBoundary];
-	[request addValue:contentType forHTTPHeaderField:@"Content-Type"];
 	
 	NSMutableDictionary *postParams = [NSMutableDictionary dictionaryWithCapacity:0];
 	[postParams setObject:[NSString stringWithFormat:@"%d", 0] forKey:@"icon"];
@@ -242,14 +221,8 @@
 	[postParams setObject:[NSString stringWithFormat:@"%@", creationTime] forKey:@"creation_time"];
 	[postParams setObject:[NSString stringWithFormat:@"%@", formToken] forKey:@"form_token"];
 	
-	[request setHTTPMethod:@"POST"];
-	
-	NSData *bodyData = [self setMultipartBody:postParams];
-	[request setHTTPBody:bodyData];
-	
-//	NSLog(@"bodyData : %@", [[[NSString alloc] initWithData:bodyData encoding:NSUTF8StringEncoding] autorelease]);
-	
-	return [self sendRequest:request requestType:NetworkRequestPosting isMobile:NO];
+	return [self sendRequestWithMethod:kOSXDevHTTPMethodMultipart url:url queryParameters:postParams 
+						   requestType:NetworkRequestPosting isMobile:NO];
 }
 
 @end
@@ -386,9 +359,30 @@
 	return body;
 }
 
-- (NSString *)sendRequest:(NSMutableURLRequest *)theRequest 
-			  requestType:(NetworkRequestType)requestType 
-				 isMobile:(BOOL)isMobile {
+- (NSString *)sendRequestWithMethod:(NSString *)method url:(NSURL *)url queryParameters:(NSDictionary *)queryParams
+						requestType:(NetworkRequestType)requestType isMobile:(BOOL)isMobile {
+	
+	NSMutableURLRequest *theRequest = [NSMutableURLRequest requestWithURL:url
+															  cachePolicy:NSURLRequestUseProtocolCachePolicy
+														  timeoutInterval:kOSXDevURLRequestTimeout];
+	NSLog(@"theRequest.HTTPShouldHandleCookies : %@", theRequest.HTTPShouldHandleCookies ? @"YES" : @"NO");
+	[theRequest setHTTPShouldHandleCookies:YES];
+	
+	if ([method isEqualToString:kOSXDevHTTPMethodPost] || [method isEqualToString:kOSXDevHTTPMethodMultipart]) {
+		[theRequest setHTTPMethod:@"POST"];
+		
+		if ([method isEqualToString:kOSXDevHTTPMethodMultipart]) {
+			// multipart
+			NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", kOSXDevMultipartBoundary];
+			[theRequest addValue:contentType forHTTPHeaderField:@"Content-Type"];
+			[theRequest setHTTPBody:[self setMultipartBody:queryParams]];
+		}
+		else {
+			// post
+			[theRequest setHTTPBody:[self setPostBody:queryParams]];
+		}
+	}
+	
 	if (isMobile) {
 		[theRequest setValue:kMobileSafariUserAgent forHTTPHeaderField:@"User-Agent"];
 	}
@@ -420,6 +414,7 @@
 	}
 }
 
+/*
 - (void)cookieChangedNotificationCalled:(NSNotification *)notification {
 	NSLog(@"NSHTTPCookieManagerCookiesChangedNotification called");
 	
@@ -427,33 +422,41 @@
 		NSLog(@"changed cookie : %@", [cookie value]);
 	}
 }
+ */
 
 @end
 
 @implementation NetworkObject (NSURLConnectionDelegate)
 
-//- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
-//	if (_username && _password && [challenge previousFailureCount] == 0 && ![challenge proposedCredential]) {
-//		NSURLCredential *credential = [NSURLCredential credentialWithUser:_username password:_password 
-//															  persistence:NSURLCredentialPersistenceForSession];
-//		[[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
-//	}
-//	else {
-//		[[challenge sender] continueWithoutCredentialForAuthenticationChallenge:challenge];
-//	}
-//}
+/*
+- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
+	NSLog(@"didReceiveAuthenticationChallenge called");
+	if ([[UserInfo sharedInfo] userId] && [[UserInfo sharedInfo] userPassword] &&
+		[challenge previousFailureCount] == 0 && ![challenge proposedCredential]) {
+		NSURLCredential *credential = [NSURLCredential credentialWithUser:[[UserInfo sharedInfo] userId] 
+																 password:[[UserInfo sharedInfo] userPassword] 
+															  persistence:NSURLCredentialPersistenceForSession];
+		[[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
+	}
+	else {
+		[[challenge sender] continueWithoutCredentialForAuthenticationChallenge:challenge];
+	}
+}
+ */
 
 - (void)connection:(AsyncURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
     [connection resetDataLength];
     
     NSHTTPURLResponse *resp = (NSHTTPURLResponse *)response;
     [connection setResponse:resp];
-    
-	NSHTTPURLResponse *respDebug = (NSHTTPURLResponse *)response;
-	NSLog(@"OSXDev debug : (%ld) [%@]:\r%@", 
-		  (long)[resp statusCode], 
-		  [NSHTTPURLResponse localizedStringForStatusCode:[respDebug statusCode]], 
-		  [respDebug allHeaderFields]);
+	
+//	NSLog(@"cookieAcceptPolicy == NSHTTPCookieAcceptPolicyAlways? %@", [NSHTTPCookieStorage sharedHTTPCookieStorage].cookieAcceptPolicy == NSHTTPCookieAcceptPolicyAlways ? @"YES" : @"NO");
+//    
+//	NSHTTPURLResponse *respDebug = (NSHTTPURLResponse *)response;
+//	NSLog(@"OSXDev debug : (%ld) [%@]:\r%@", 
+//		  (long)[resp statusCode], 
+//		  [NSHTTPURLResponse localizedStringForStatusCode:[respDebug statusCode]], 
+//		  [respDebug allHeaderFields]);
 }
 
 - (void)connection:(AsyncURLConnection *)connection didReceiveData:(NSData *)data {

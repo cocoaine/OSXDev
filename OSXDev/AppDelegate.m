@@ -26,6 +26,8 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+	[NSHTTPCookieStorage sharedHTTPCookieStorage].cookieAcceptPolicy = NSHTTPCookieAcceptPolicyAlways;
+	
 	BOOL resetValue = [[NSUserDefaults standardUserDefaults] boolForKey:kOSXDevResetValue];
 	if (resetValue) {
 		[[UserInfo sharedInfo] logout];
