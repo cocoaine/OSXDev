@@ -22,6 +22,7 @@
 @synthesize viewOnline = _viewOnline;
 @synthesize loginStatus = _loginStatus;
 @synthesize sid = _sid;
+@synthesize cookies = _cookies;
 
 static UserInfo *sharedInfo = nil;
 
@@ -107,6 +108,7 @@ static UserInfo *sharedInfo = nil;
 - (void)dealloc
 {
 	[_sid release];
+	[_cookies release];
 	
     [super dealloc];
 }
@@ -126,12 +128,14 @@ static UserInfo *sharedInfo = nil;
 // MARK: -
 // MARK: << Public methods >>
 - (void)logout {
-	NSHTTPCookie *cookie;
+	/*
 	NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-	for (cookie in [storage cookies]) {
+	for (NSHTTPCookie *cookie in [storage cookies]) {
 		[storage deleteCookie:cookie];
 	}
-
+	 */
+	
+	self.cookies = nil;
 	self.sid = nil;
 	self.loginStatus = UserInfoLoginStatusNotLoggedIn;
 

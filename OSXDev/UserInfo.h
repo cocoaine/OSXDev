@@ -25,6 +25,7 @@ typedef enum _UserInfoLoginStatus {
 @property (assign, nonatomic) BOOL viewOnline;
 @property (assign, nonatomic) UserInfoLoginStatus loginStatus;
 @property (retain, nonatomic) NSString *sid;
+@property (retain, nonatomic) NSArray *cookies;
 
 + (UserInfo *)sharedInfo;
 

@@ -9,6 +9,8 @@
 #ifndef OSXDev_NetworkHeader_h
 #define OSXDev_NetworkHeader_h
 
+#define kOSXDevNetworkDEBUG			0
+
 #define	kOSXDevURLMain				@"index.php"
 #define kOSXDevURLViewForum			@"viewforum.php"
 #define kOSXDevURLViewTopic			@"viewtopic.php"

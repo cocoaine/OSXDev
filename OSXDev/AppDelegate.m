@@ -26,7 +26,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-	[NSHTTPCookieStorage sharedHTTPCookieStorage].cookieAcceptPolicy = NSHTTPCookieAcceptPolicyAlways;
+	[NSHTTPCookieStorage sharedHTTPCookieStorage].cookieAcceptPolicy = NSHTTPCookieAcceptPolicyNever;
 	
 	BOOL resetValue = [[NSUserDefaults standardUserDefaults] boolForKey:kOSXDevResetValue];
 	if (resetValue) {
@@ -35,6 +35,7 @@
 		[[NSUserDefaults standardUserDefaults] setBool:NO forKey:kOSXDevResetValue];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 	}
+	/*
 	else {
 		// 시작할 때 쿠키 정리하기.
 		NSHTTPCookie *cookie;
@@ -43,6 +44,7 @@
 			[storage deleteCookie:cookie];
 		}
 	}
+	 */
 	
 	self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
     // Override point for customization after application launch.

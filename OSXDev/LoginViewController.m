@@ -118,6 +118,29 @@
 }
 
 - (void)startLoginRequest {
+	if ([[self.idTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] == 0 || 
+		[[self.pwTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] == 0) {
+		NSString *alertMessage = nil;
+		if ([[self.idTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] == 0) {
+			alertMessage = @"아이디가 비어있습니다.\n다시 한 번 확인해주세요.";
+		}
+		else {
+			alertMessage = @"비밀번호가 비어있습니다.\n다시 한 번 확인해주세요.";
+		}
+		
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"로그인 오류"
+															message:alertMessage
+														   delegate:self
+												  cancelButtonTitle:@"확인"
+												  otherButtonTitles:nil, nil];
+		alertView.tag = kOSXDevAlertTagError;
+		
+		[alertView show];
+		[alertView release];
+		
+		return;
+	}
+	
 	[self.idTextField resignFirstResponder];
 	[self.pwTextField resignFirstResponder];
 	

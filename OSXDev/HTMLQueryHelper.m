@@ -388,6 +388,9 @@
 
 + (BOOL)isValidData:(NSData *)htmlData requestType:(NetworkRequestType)requestType {
 	NSString *dataString = [[[NSString alloc] initWithData:htmlData encoding:NSUTF8StringEncoding] autorelease];
+	if ([dataString length] == 0) {
+		return NO;
+	}
 	
 	NSString *rangeString = nil;
 	switch (requestType) {

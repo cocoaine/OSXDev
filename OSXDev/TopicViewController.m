@@ -462,19 +462,6 @@
 	}
 	
 	if (requestType == NetworkRequestViewForum) {
-		if ([UserInfo sharedInfo].loginStatus == UserInfoLoginStatusLoggedIn) {
-			if ([HTMLHelper isValidData:data requestType:requestType]) {
-				self.writeButton.enabled = YES;
-			}
-			else {
-				self.writeButton.enabled = NO;
-			}
-		}
-		else {
-			// 일단 write button 활성화해야 로그인이 가능하니.
-			self.writeButton.enabled = YES;
-		}
-        
 		self.topicList = nil;
 		[self.topicTableView reloadData];
 		
@@ -522,6 +509,7 @@
 		}
 		
 		self.gotoButton.enabled = YES;
+		self.writeButton.enabled = YES;
 		
 		[self.topicTableView reloadData]; 
 	}

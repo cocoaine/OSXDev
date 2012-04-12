@@ -23,8 +23,12 @@
 - (NSData *)setMultipartBody:(NSDictionary *)postParams;
 - (NSString *)sendRequestWithMethod:(NSString *)method url:(NSURL *)url queryParameters:(NSDictionary *)queryParams
 						requestType:(NetworkRequestType)requestType isMobile:(BOOL)isMobile;
+- (void)setCookies;
 - (void)loginSucceedNotificationCalled:(NSNotification *)notification;
-//- (void)cookieChangedNotificationCalled:(NSNotification *)notification;
+
+#if kOSXDevNetworkDEBUG
+- (void)cookieChangedNotificationCalled:(NSNotification *)notification;
+#endif
 @end
 
 @interface NetworkObject (NSURLConnectionDelegate)
@@ -53,10 +57,12 @@
 													 name:kOSXDevNotificationLoginSucceed
 												   object:nil];
 		
-//		[[NSNotificationCenter defaultCenter] addObserver:self
-//												 selector:@selector(cookieChangedNotificationCalled:)
-//													 name:NSHTTPCookieManagerCookiesChangedNotification
-//												   object:nil];
+#if kOSXDevNetworkDEBUG
+		[[NSNotificationCenter defaultCenter] addObserver:self
+												 selector:@selector(cookieChangedNotificationCalled:)
+													 name:NSHTTPCookieManagerCookiesChangedNotification
+												   object:nil];
+#endif
     }
     return self;
 }
@@ -67,9 +73,11 @@
 													name:kOSXDevNotificationLoginSucceed
 												  object:nil];
 	
-//	[[NSNotificationCenter defaultCenter] removeObserver:self
-//													name:NSHTTPCookieManagerCookiesChangedNotification
-//												  object:nil];
+#if kOSXDevNetworkDEBUG
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+													name:NSHTTPCookieManagerCookiesChangedNotification
+												  object:nil];
+#endif
 	
     self.delegate = nil;
 	
@@ -286,7 +294,9 @@
 		[urlString appendFormat:@"&%@=%@", @"sid", [UserInfo sharedInfo].sid];
 	}
 	
-//	NSLog(@"urlString : %@", urlString);
+#if kOSXDevNetworkDEBUG
+	NSLog(@"urlString : %@", urlString);
+#endif
 	
 	return [NSURL URLWithString:urlString];
 }
@@ -319,7 +329,9 @@
 		}
 	}
 	
+#if kOSXDevNetworkDEBUG
 	NSLog(@"postString : %@", postString);
+#endif
 	
 	NSData *requestData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
 	return requestData;
@@ -361,12 +373,26 @@
 
 - (NSString *)sendRequestWithMethod:(NSString *)method url:(NSURL *)url queryParameters:(NSDictionary *)queryParams
 						requestType:(NetworkRequestType)requestType isMobile:(BOOL)isMobile {
+	/*
+	// 쿠키 정리
+	[self setCookies];
+	 */
+	// 일단 쿠키는 완전히 수동으로 관리하자.
+	// setHTTPShouldHandleCookies에서 자꾸 이상 증상이 일어남.
+	// 쿠키가 로그인 정보 없는 쿠키로 뒤바뀜.
+	
+#if kOSXDevNetworkDEBUG
+	NSLog(@"cookies count : %d", [[NSHTTPCookieStorage sharedHTTPCookieStorage].cookies count]);
+#endif
 	
 	NSMutableURLRequest *theRequest = [NSMutableURLRequest requestWithURL:url
 															  cachePolicy:NSURLRequestUseProtocolCachePolicy
 														  timeoutInterval:kOSXDevURLRequestTimeout];
+	
+	[theRequest setHTTPShouldHandleCookies:NO];
+#if kOSXDevNetworkDEBUG
 	NSLog(@"theRequest.HTTPShouldHandleCookies : %@", theRequest.HTTPShouldHandleCookies ? @"YES" : @"NO");
-	[theRequest setHTTPShouldHandleCookies:YES];
+#endif
 	
 	if ([method isEqualToString:kOSXDevHTTPMethodPost] || [method isEqualToString:kOSXDevHTTPMethodMultipart]) {
 		[theRequest setHTTPMethod:@"POST"];
@@ -387,6 +413,15 @@
 		[theRequest setValue:kMobileSafariUserAgent forHTTPHeaderField:@"User-Agent"];
 	}
 	
+	if ([[UserInfo sharedInfo].cookies count] > 0) {
+		theRequest.allHTTPHeaderFields = [NSHTTPCookie requestHeaderFieldsWithCookies:[UserInfo sharedInfo].cookies];
+	}
+	
+#if kOSXDevNetworkDEBUG
+	NSLog(@"theRequest.allHTTPHeaderFields : %@", theRequest.allHTTPHeaderFields);
+	NSLog(@"theRequest.HTTPBody : %@", [[[NSString alloc] initWithData:theRequest.HTTPBody encoding:NSUTF8StringEncoding] autorelease]);
+#endif
+	
 	// start network indicator
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 	
@@ -405,6 +440,16 @@
     return [connection identifier];
 }
 
+- (void)setCookies {
+	for (NSHTTPCookie *cookie in [NSHTTPCookieStorage sharedHTTPCookieStorage].cookies) {
+		[[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:cookie];
+	}
+	
+	for (NSHTTPCookie *cookie in [UserInfo sharedInfo].cookies) {
+		[[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
+	}
+}
+
 - (void)loginSucceedNotificationCalled:(NSNotification *)notification {
 	NSDictionary *loginInfo = notification.userInfo;
 	
@@ -417,7 +462,7 @@
 	}
 }
 
-/*
+#if kOSXDevNetworkDEBUG
 - (void)cookieChangedNotificationCalled:(NSNotification *)notification {
 	NSLog(@"NSHTTPCookieManagerCookiesChangedNotification called");
 	
@@ -425,7 +470,7 @@
 		NSLog(@"changed cookie : %@", [cookie value]);
 	}
 }
- */
+#endif
 
 @end
 
@@ -453,13 +498,62 @@
     NSHTTPURLResponse *resp = (NSHTTPURLResponse *)response;
     [connection setResponse:resp];
 	
-//	NSLog(@"cookieAcceptPolicy == NSHTTPCookieAcceptPolicyAlways? %@", [NSHTTPCookieStorage sharedHTTPCookieStorage].cookieAcceptPolicy == NSHTTPCookieAcceptPolicyAlways ? @"YES" : @"NO");
-//    
-//	NSHTTPURLResponse *respDebug = (NSHTTPURLResponse *)response;
-//	NSLog(@"OSXDev debug : (%ld) [%@]:\r%@", 
-//		  (long)[resp statusCode], 
-//		  [NSHTTPURLResponse localizedStringForStatusCode:[respDebug statusCode]], 
-//		  [respDebug allHeaderFields]);
+	if (connection.requestType == NetworkRequestLogin && [resp.allHeaderFields objectForKey:@"Set-Cookie"]) {
+		NSArray *cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:resp.allHeaderFields forURL:connection.URL];
+		if ([cookies count] == 6) { // default 3 + login 3
+#if kOSXDevNetworkDEBUG
+			for (NSHTTPCookie *cookie in cookies) {
+				NSString *reqString = nil;
+				switch (connection.requestType) {
+					case NetworkRequestForumList:
+						reqString = @"NetworkRequestForumList";
+						break;
+					case NetworkRequestViewForum:
+						reqString = @"NetworkRequestViewForum";
+						break;
+					case NetworkRequestViewTopic:
+						reqString = @"NetworkRequestViewTopic";
+						break;
+					case NetworkRequestViewMember:
+						reqString = @"NetworkRequestViewMember";
+						break;
+					case NetworkRequestLogin:
+						reqString = @"NetworkRequestLogin";
+						break;
+					case NetworkRequestPostingData:
+						reqString = @"NetworkRequestPostingData";
+						break;
+					case NetworkRequestPosting:
+						reqString = @"NetworkRequestPosting";
+						break;
+						
+					default:
+						break;
+				}
+				
+				NSLog(@"resp : %@ / cookie name : %@", reqString, cookie.name);
+				NSLog(@"resp : %@ / cookie value : %@", reqString, cookie.value);
+			}
+#endif
+			
+			NSLog(@"add cookie");
+			
+			// 처음의 비로그인 쿠키 3개는 버리고
+			// 로그인 이후의 쿠키 3개만 취한다.
+			NSArray *tmpCookies = [cookies subarrayWithRange:NSMakeRange(3, 3)];
+			[UserInfo sharedInfo].cookies = tmpCookies;
+		}
+	}
+
+#if kOSXDevNetworkDEBUG
+	NSLog(@"cookieAcceptPolicy == NSHTTPCookieAcceptPolicyAlways? %@", [NSHTTPCookieStorage sharedHTTPCookieStorage].cookieAcceptPolicy == NSHTTPCookieAcceptPolicyAlways ? @"YES" : @"NO");
+    
+	NSHTTPURLResponse *respDebug = (NSHTTPURLResponse *)response;
+	NSLog(@"OSXDev debug : (%ld) [%@]:\r%@", 
+		  (long)[resp statusCode], 
+		  [NSHTTPURLResponse localizedStringForStatusCode:[respDebug statusCode]], 
+		  [respDebug allHeaderFields]);
+#endif
 }
 
 - (void)connection:(AsyncURLConnection *)connection didReceiveData:(NSData *)data {
