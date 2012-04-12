@@ -394,6 +394,11 @@
 	NSLog(@"theRequest.HTTPShouldHandleCookies : %@", theRequest.HTTPShouldHandleCookies ? @"YES" : @"NO");
 #endif
 	
+	// 쿠키 수동 관리...
+	if ([[UserInfo sharedInfo].cookies count] > 0) {
+		theRequest.allHTTPHeaderFields = [NSHTTPCookie requestHeaderFieldsWithCookies:[UserInfo sharedInfo].cookies];
+	}
+	
 	if ([method isEqualToString:kOSXDevHTTPMethodPost] || [method isEqualToString:kOSXDevHTTPMethodMultipart]) {
 		[theRequest setHTTPMethod:@"POST"];
 		
@@ -411,10 +416,6 @@
 	
 	if (isMobile) {
 		[theRequest setValue:kMobileSafariUserAgent forHTTPHeaderField:@"User-Agent"];
-	}
-	
-	if ([[UserInfo sharedInfo].cookies count] > 0) {
-		theRequest.allHTTPHeaderFields = [NSHTTPCookie requestHeaderFieldsWithCookies:[UserInfo sharedInfo].cookies];
 	}
 	
 #if kOSXDevNetworkDEBUG
