@@ -372,15 +372,7 @@
 }
 
 - (NSString *)sendRequestWithMethod:(NSString *)method url:(NSURL *)url queryParameters:(NSDictionary *)queryParams
-						requestType:(NetworkRequestType)requestType isMobile:(BOOL)isMobile {
-	/*
-	// 쿠키 정리
-	[self setCookies];
-	 */
-	// 일단 쿠키는 완전히 수동으로 관리하자.
-	// setHTTPShouldHandleCookies에서 자꾸 이상 증상이 일어남.
-	// 쿠키가 로그인 정보 없는 쿠키로 뒤바뀜.
-	
+						requestType:(NetworkRequestType)requestType isMobile:(BOOL)isMobile {	
 #if kOSXDevNetworkDEBUG
 	NSLog(@"cookies count : %d", [[NSHTTPCookieStorage sharedHTTPCookieStorage].cookies count]);
 #endif
@@ -389,15 +381,10 @@
 															  cachePolicy:NSURLRequestUseProtocolCachePolicy
 														  timeoutInterval:kOSXDevURLRequestTimeout];
 	
-	[theRequest setHTTPShouldHandleCookies:NO];
+	[theRequest setHTTPShouldHandleCookies:YES];
 #if kOSXDevNetworkDEBUG
 	NSLog(@"theRequest.HTTPShouldHandleCookies : %@", theRequest.HTTPShouldHandleCookies ? @"YES" : @"NO");
 #endif
-	
-	// 쿠키 수동 관리...
-	if ([[UserInfo sharedInfo].cookies count] > 0) {
-		theRequest.allHTTPHeaderFields = [NSHTTPCookie requestHeaderFieldsWithCookies:[UserInfo sharedInfo].cookies];
-	}
 	
 	if ([method isEqualToString:kOSXDevHTTPMethodPost] || [method isEqualToString:kOSXDevHTTPMethodMultipart]) {
 		[theRequest setHTTPMethod:@"POST"];
@@ -498,53 +485,6 @@
     
     NSHTTPURLResponse *resp = (NSHTTPURLResponse *)response;
     [connection setResponse:resp];
-	
-	if (connection.requestType == NetworkRequestLogin && [resp.allHeaderFields objectForKey:@"Set-Cookie"]) {
-		NSArray *cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:resp.allHeaderFields forURL:connection.URL];
-		if ([cookies count] == 6) { // default 3 + login 3
-#if kOSXDevNetworkDEBUG
-			for (NSHTTPCookie *cookie in cookies) {
-				NSString *reqString = nil;
-				switch (connection.requestType) {
-					case NetworkRequestForumList:
-						reqString = @"NetworkRequestForumList";
-						break;
-					case NetworkRequestViewForum:
-						reqString = @"NetworkRequestViewForum";
-						break;
-					case NetworkRequestViewTopic:
-						reqString = @"NetworkRequestViewTopic";
-						break;
-					case NetworkRequestViewMember:
-						reqString = @"NetworkRequestViewMember";
-						break;
-					case NetworkRequestLogin:
-						reqString = @"NetworkRequestLogin";
-						break;
-					case NetworkRequestPostingData:
-						reqString = @"NetworkRequestPostingData";
-						break;
-					case NetworkRequestPosting:
-						reqString = @"NetworkRequestPosting";
-						break;
-						
-					default:
-						break;
-				}
-				
-				NSLog(@"resp : %@ / cookie name : %@", reqString, cookie.name);
-				NSLog(@"resp : %@ / cookie value : %@", reqString, cookie.value);
-			}
-#endif
-			
-			NSLog(@"add cookie");
-			
-			// 처음의 비로그인 쿠키 3개는 버리고
-			// 로그인 이후의 쿠키 3개만 취한다.
-			NSArray *tmpCookies = [cookies subarrayWithRange:NSMakeRange(3, 3)];
-			[UserInfo sharedInfo].cookies = tmpCookies;
-		}
-	}
 
 #if kOSXDevNetworkDEBUG
 	NSLog(@"cookieAcceptPolicy == NSHTTPCookieAcceptPolicyAlways? %@", [NSHTTPCookieStorage sharedHTTPCookieStorage].cookieAcceptPolicy == NSHTTPCookieAcceptPolicyAlways ? @"YES" : @"NO");

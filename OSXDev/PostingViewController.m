@@ -351,21 +351,17 @@
 // MARK: -
 // MARK: << NetworkObjectDelegate >>
 - (void)requestSucceed:(NSData *)data forRequest:(NSString *)connectionIdentifier requestType:(NetworkRequestType)requestType {
-	[SVProgressHUD dismiss];
+	if (requestType != NetworkRequestLogin) {
+		[SVProgressHUD dismiss];
+	}
 	
 	if (requestType == NetworkRequestPostingData) {
 		NSDictionary *postingInfo = [HTMLHelper convertPostingInfo:data];
 		if ([postingInfo count] == 0) {
-			// 아무런 포스팅 밸류가 없으면 무조건 오류로 간주하자.
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"불러오기 오류"
-																message:@"글쓰기 불러오기에 실패하였습니다.\n잠시 후에 다시 시도해주세요." 
-															   delegate:self
-													  cancelButtonTitle:@"확인"
-													  otherButtonTitles:nil, nil];
-			alertView.tag = kOSXDevAlertTagErrorLoading;
-			
-			[alertView show];
-			[alertView release];
+			// 로그인된 상태에서 포스팅 오류가 나면 쿠키 문제?
+			// 로그인 한 번 더 시도하기.
+			NSLog(@"########## retry login...");
+			[self.networkObject login];
 			
 			return;
 		}
@@ -404,6 +400,30 @@
 			[alertView release];
 		}
 	}
+	else if (requestType == NetworkRequestLogin) {
+		if ([HTMLHelper isValidData:data requestType:requestType] == NO) {
+			[[UserInfo sharedInfo] logout];
+			[[UserInfo sharedInfo] setLoginStatus:UserInfoLoginStatusNotLoggedIn];
+			
+			// 이땐 정말 최종적인 글쓰기 오류 간주.
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"불러오기 오류"
+																message:@"글쓰기 불러오기에 실패하였습니다.\n잠시 후에 다시 시도해주세요." 
+															   delegate:self
+													  cancelButtonTitle:@"확인"
+													  otherButtonTitles:nil, nil];
+			alertView.tag = kOSXDevAlertTagErrorLoading;
+			
+			[alertView show];
+			[alertView release];
+		}
+		else {
+			NSLog(@"########## login success, try to get posting data");
+			[[UserInfo sharedInfo] setLoginStatus:UserInfoLoginStatusLoggedIn];
+			
+			self.connectionIdentifier = [self.networkObject postingDataWithForumId:self.forumId
+																		   topicId:self.topicId];
+		}
+	}
 	else {
 		
 	}
@@ -414,7 +434,7 @@
 - (void)requestFailed:(NSString *)connectionIdentifier requestType:(NetworkRequestType)requestType error:(NSError *)error {
 	[SVProgressHUD dismiss];
 	
-	if (requestType == NetworkRequestPostingData) {
+	if (requestType == NetworkRequestPostingData || requestType == NetworkRequestLogin) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"불러오기 오류"
 															message:@"글쓰기 불러오기에 실패하였습니다.\n잠시 후에 다시 시도해주세요." 
 														   delegate:self

@@ -128,12 +128,10 @@ static UserInfo *sharedInfo = nil;
 // MARK: -
 // MARK: << Public methods >>
 - (void)logout {
-	/*
 	NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
 	for (NSHTTPCookie *cookie in [storage cookies]) {
 		[storage deleteCookie:cookie];
 	}
-	 */
 	
 	self.cookies = nil;
 	self.sid = nil;
