@@ -22,7 +22,6 @@
 @synthesize viewOnline = _viewOnline;
 @synthesize loginStatus = _loginStatus;
 @synthesize sid = _sid;
-@synthesize cookies = _cookies;
 
 static UserInfo *sharedInfo = nil;
 
@@ -108,7 +107,6 @@ static UserInfo *sharedInfo = nil;
 - (void)dealloc
 {
 	[_sid release];
-	[_cookies release];
 	
     [super dealloc];
 }
@@ -133,7 +131,6 @@ static UserInfo *sharedInfo = nil;
 		[storage deleteCookie:cookie];
 	}
 	
-	self.cookies = nil;
 	self.sid = nil;
 	self.loginStatus = UserInfoLoginStatusNotLoggedIn;
 

@@ -351,20 +351,25 @@
 // MARK: -
 // MARK: << NetworkObjectDelegate >>
 - (void)requestSucceed:(NSData *)data forRequest:(NSString *)connectionIdentifier requestType:(NetworkRequestType)requestType {
-	if (requestType != NetworkRequestLogin) {
-		[SVProgressHUD dismiss];
-	}
-	
 	if (requestType == NetworkRequestPostingData) {
 		NSDictionary *postingInfo = [HTMLHelper convertPostingInfo:data];
 		if ([postingInfo count] == 0) {
 			// 로그인된 상태에서 포스팅 오류가 나면 쿠키 문제?
 			// 로그인 한 번 더 시도하기.
 			NSLog(@"########## retry login...");
+			NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+			for (NSHTTPCookie *cookie in [storage cookies]) {
+				[storage deleteCookie:cookie];
+			}
+			
+			[UserInfo sharedInfo].sid = nil;
+			
 			[self.networkObject login];
 			
 			return;
 		}
+		
+		[SVProgressHUD dismiss];
 		
 		self.topicCurPostId = [postingInfo objectForKey:@"topic_cur_post_id"];
 		self.lastClick = [postingInfo objectForKey:@"lastclick"];
@@ -383,6 +388,8 @@
 		}
 	}
 	else if (requestType == NetworkRequestPosting) {
+		[SVProgressHUD dismiss];
+		
 		if ([HTMLHelper isValidData:data requestType:requestType]) {
 			if (self.delegate) {
 				[self.delegate postingViewControllerDidFinishPosting:self];
@@ -402,9 +409,6 @@
 	}
 	else if (requestType == NetworkRequestLogin) {
 		if ([HTMLHelper isValidData:data requestType:requestType] == NO) {
-			[[UserInfo sharedInfo] logout];
-			[[UserInfo sharedInfo] setLoginStatus:UserInfoLoginStatusNotLoggedIn];
-			
 			// 이땐 정말 최종적인 글쓰기 오류 간주.
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"불러오기 오류"
 																message:@"글쓰기 불러오기에 실패하였습니다.\n잠시 후에 다시 시도해주세요." 
@@ -418,8 +422,6 @@
 		}
 		else {
 			NSLog(@"########## login success, try to get posting data");
-			[[UserInfo sharedInfo] setLoginStatus:UserInfoLoginStatusLoggedIn];
-			
 			self.connectionIdentifier = [self.networkObject postingDataWithForumId:self.forumId
 																		   topicId:self.topicId];
 		}
@@ -428,9 +430,7 @@
 		
 	}
 	
-	if (requestType != NetworkRequestLogin) {
-		self.connectionIdentifier = nil;
-	}
+	self.connectionIdentifier = nil;
 }
 
 - (void)requestFailed:(NSString *)connectionIdentifier requestType:(NetworkRequestType)requestType error:(NSError *)error {

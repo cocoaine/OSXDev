@@ -23,7 +23,6 @@
 - (NSData *)setMultipartBody:(NSDictionary *)postParams;
 - (NSString *)sendRequestWithMethod:(NSString *)method url:(NSURL *)url queryParameters:(NSDictionary *)queryParams
 						requestType:(NetworkRequestType)requestType isMobile:(BOOL)isMobile;
-- (void)setCookies;
 - (void)loginSucceedNotificationCalled:(NSNotification *)notification;
 
 #if kOSXDevNetworkDEBUG
@@ -426,16 +425,6 @@
     }
     
     return [connection identifier];
-}
-
-- (void)setCookies {
-	for (NSHTTPCookie *cookie in [NSHTTPCookieStorage sharedHTTPCookieStorage].cookies) {
-		[[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:cookie];
-	}
-	
-	for (NSHTTPCookie *cookie in [UserInfo sharedInfo].cookies) {
-		[[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
-	}
 }
 
 - (void)loginSucceedNotificationCalled:(NSNotification *)notification {
