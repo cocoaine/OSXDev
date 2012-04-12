@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Release | OSXDev for iPhone/iPad]]></title>
   <link href="http://cocoaine.github.com/OSXDev/blog/categories/release/atom.xml" rel="self"/>
   <link href="http://cocoaine.github.com/OSXDev/"/>
-  <updated>2012-04-12T13:53:18+09:00</updated>
+  <updated>2012-04-13T00:11:06+09:00</updated>
   <id>http://cocoaine.github.com/OSXDev/</id>
   <author>
     <name><![CDATA[J.C. Yang]]></name>
@@ -43,6 +43,7 @@
 <li>로그인 관련 리셋을 위한 세팅 번들 추가</li>
 <li>서명 기능 (세팅 번들)</li>
 <li>링크 클릭시 내부 브라우저로 보여주기 (사파리로 열기 포함)</li>
+<li>토픽, 댓글 세부 정보 (댓글 갯수, 최근 등록시간, 글 등록시간 등)</li>
 </ul>
 
 
@@ -51,7 +52,6 @@
 <ul>
 <li>토픽, 댓글 검색 기능</li>
 <li>토픽, 댓글 남기기에 사진 첨부하기 기능</li>
-<li>토픽, 댓글 세부 정보 보여주기 (조회수, 최근 등록 시간 등)</li>
 <li>토픽, 댓글 신고하기 기능</li>
 <li>사용자 프로필 사진 보여주기</li>
 </ul>
