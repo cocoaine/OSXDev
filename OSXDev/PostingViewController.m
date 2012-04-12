@@ -351,10 +351,6 @@
 // MARK: -
 // MARK: << NetworkObjectDelegate >>
 - (void)requestSucceed:(NSData *)data forRequest:(NSString *)connectionIdentifier requestType:(NetworkRequestType)requestType {
-	if (requestType != NetworkRequestLogin) {
-		[SVProgressHUD dismiss];
-	}
-	
 	if (requestType == NetworkRequestPostingData) {
 		NSDictionary *postingInfo = [HTMLHelper convertPostingInfo:data];
 		if ([postingInfo count] == 0) {
@@ -365,6 +361,8 @@
 			
 			return;
 		}
+		
+		[SVProgressHUD dismiss];
 		
 		self.topicCurPostId = [postingInfo objectForKey:@"topic_cur_post_id"];
 		self.lastClick = [postingInfo objectForKey:@"lastclick"];
@@ -383,6 +381,8 @@
 		}
 	}
 	else if (requestType == NetworkRequestPosting) {
+		[SVProgressHUD dismiss];
+		
 		if ([HTMLHelper isValidData:data requestType:requestType]) {
 			if (self.delegate) {
 				[self.delegate postingViewControllerDidFinishPosting:self];
@@ -402,6 +402,8 @@
 	}
 	else if (requestType == NetworkRequestLogin) {
 		if ([HTMLHelper isValidData:data requestType:requestType] == NO) {
+			[SVProgressHUD dismiss];
+			
 			[[UserInfo sharedInfo] logout];
 			[[UserInfo sharedInfo] setLoginStatus:UserInfoLoginStatusNotLoggedIn];
 			
