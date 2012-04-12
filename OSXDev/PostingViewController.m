@@ -428,7 +428,9 @@
 		
 	}
 	
-	self.connectionIdentifier = nil;
+	if (requestType != NetworkRequestLogin) {
+		self.connectionIdentifier = nil;
+	}
 }
 
 - (void)requestFailed:(NSString *)connectionIdentifier requestType:(NetworkRequestType)requestType error:(NSError *)error {
