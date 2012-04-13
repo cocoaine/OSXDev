@@ -279,7 +279,7 @@
 
 - (void)clickGoto:(id)sender {
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"페이지 이동"
-														message:@"이동하려는 페이지 번호를 선택하세요.\n\n\n" 
+														message:@"이동하려는 페이지 번호 입력\n\n\n" 
 													   delegate:self
 											  cancelButtonTitle:@"취소"
 											  otherButtonTitles:@"확인", nil];
