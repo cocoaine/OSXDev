@@ -288,6 +288,7 @@
 			
 			cell.textLabel.text = title;
 			cell.detailTextLabel.text = desc;
+			cell.accessoryView = nil;
 		}
 			break;
 			
@@ -297,7 +298,15 @@
 			
 			NSDictionary *topicInfo = [self.activeTopicList objectAtIndex:indexPath.row];
 			cell.textLabel.text = [topicInfo objectForKey:@"topic_title"];
-			cell.detailTextLabel.text = [topicInfo objectForKey:@"topic_desc"];
+			cell.detailTextLabel.text = [topicInfo objectForKey:@"topic_recent_desc"];
+			
+			UILabel *threadCountLabel = [[[UILabel alloc] initWithFrame:CGRectMake(0.f, 0.f, 50.f, cell.frame.size.height)] autorelease];
+			threadCountLabel.textAlignment = UITextAlignmentRight;
+			threadCountLabel.backgroundColor = [UIColor clearColor];
+			threadCountLabel.font = [UIFont systemFontOfSize:15.f];
+			threadCountLabel.textColor = [UIColor grayColor];
+			threadCountLabel.text = [NSString stringWithFormat:@"[%@]  ", [topicInfo objectForKey:@"topic_thread_count"]];
+			cell.accessoryView = threadCountLabel;
 		}
 			break;
 			

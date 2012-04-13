@@ -124,13 +124,54 @@
 	resultNodes = [htmlParser nodesForXPath:kOSXDevXPathTopicList error:nil];
 	NSMutableArray *topicList = [NSMutableArray arrayWithCapacity:[resultNodes count]];
 	
-	NSLog(@"count : %d", [resultNodes count]);
+//	NSLog(@"count : %d", [resultNodes count]);
 	for (CXMLElement *element in resultNodes) {
 		CXMLNode *elementNode = [element childAtIndex:0];
 		
 		NSString *topicTitle = nil;
 		NSString *topicDesc = nil;
 		NSString *topicHref = nil;
+		NSString *topicThreadCount = nil;
+		NSString *topicRecentDesc = nil;
+		
+		NSString *tmpCountString = [[element childAtIndex:2] stringValue];
+		topicThreadCount = [[tmpCountString componentsSeparatedByString:@" "] objectAtIndex:0];
+		
+		CXMLNode *tmpRecentInfoNode = [element childAtIndex:[element childCount] - 2];
+		CXMLNode *recentInfoNode = [tmpRecentInfoNode childAtIndex:0];
+		if ([recentInfoNode childCount] > 0) {
+			topicRecentDesc = @"최근 글 - ";
+		}
+		
+		for (NSInteger i = 1; i < [recentInfoNode childCount]; i++) {
+			CXMLNode *childNode = [recentInfoNode childAtIndex:i];
+			
+			if ([NSStringByTrimmed([childNode stringValue]) length] == 0) {
+				continue;
+			}
+			
+			if (i == [recentInfoNode childCount] - 1) {
+				NSDateFormatter *dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
+				dateFormatter.locale = [[[NSLocale alloc] initWithLocaleIdentifier:@"ko_KR"] autorelease];
+				dateFormatter.AMSymbol = @"am";
+				dateFormatter.PMSymbol = @"pm";
+				dateFormatter.dateFormat = @"ccc MMM dd, yyyy h:mm a";
+				
+				NSDate *messageDate = [dateFormatter dateFromString:[childNode stringValue]];
+				dateFormatter.AMSymbol = @"오전";
+				dateFormatter.PMSymbol = @"오후";
+				dateFormatter.dateFormat = @", yyyy.M.dd HH:mm";
+				NSString *dateString = [dateFormatter stringFromDate:messageDate];
+				
+				topicRecentDesc = [topicRecentDesc stringByAppendingFormat:@"%@", dateString];
+			}
+			else {
+				NSString *descString = NSStringByTrimmed([childNode stringValue]);
+				if ([descString hasPrefix:@"올린이"] == NO) {
+					topicRecentDesc = [topicRecentDesc stringByAppendingFormat:@"%@", descString];
+				}
+			}
+		}
 		
 		for (CXMLNode *childNode in [elementNode children]) {
 			if ([NSStringByTrimmed([childNode stringValue]) length] == 0) {
@@ -194,6 +235,14 @@
 		
 		if (topicHref != nil) {
 			[topicDic setObject:topicHref forKey:@"topic_href"];
+		}
+		
+		if (topicThreadCount != nil) {
+			[topicDic setObject:topicThreadCount forKey:@"topic_thread_count"];
+		}
+		
+		if (topicRecentDesc != nil) {
+			[topicDic setObject:topicRecentDesc forKey:@"topic_recent_desc"];
 		}
 		
 		if ([topicDic count] != 0) {

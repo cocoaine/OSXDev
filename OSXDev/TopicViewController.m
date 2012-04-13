@@ -351,6 +351,14 @@
 	cell.textLabel.text = [topicInfo objectForKey:@"topic_title"];
 	cell.detailTextLabel.text = [topicInfo objectForKey:@"topic_desc"];
 	
+	UILabel *threadCountLabel = [[[UILabel alloc] initWithFrame:CGRectMake(0.f, 0.f, 50.f, cell.frame.size.height)] autorelease];
+	threadCountLabel.textAlignment = UITextAlignmentRight;
+	threadCountLabel.backgroundColor = [UIColor clearColor];
+	threadCountLabel.font = [UIFont systemFontOfSize:15.f];
+	threadCountLabel.textColor = [UIColor grayColor];
+	threadCountLabel.text = [NSString stringWithFormat:@"[%@]  ", [topicInfo objectForKey:@"topic_thread_count"]];
+	cell.accessoryView = threadCountLabel;
+	
     return cell;
 }
 
