@@ -351,13 +351,24 @@
 	cell.textLabel.text = [topicInfo objectForKey:@"topic_title"];
 	cell.detailTextLabel.text = [topicInfo objectForKey:@"topic_desc"];
 	
-	UILabel *threadCountLabel = [[[UILabel alloc] initWithFrame:CGRectMake(0.f, 0.f, 50.f, cell.frame.size.height)] autorelease];
-	threadCountLabel.textAlignment = UITextAlignmentRight;
-	threadCountLabel.backgroundColor = [UIColor clearColor];
-	threadCountLabel.font = [UIFont systemFontOfSize:15.f];
-	threadCountLabel.textColor = [UIColor grayColor];
-	threadCountLabel.text = [NSString stringWithFormat:@"[%@]  ", [topicInfo objectForKey:@"topic_thread_count"]];
-	cell.accessoryView = threadCountLabel;
+	if (cell.accessoryView) {
+		if ([cell.accessoryView isKindOfClass:[UILabel class]]) {
+			UILabel *threadCountLabel = (UILabel *)cell.accessoryView;
+			threadCountLabel.text = [NSString stringWithFormat:@"[%@]", [topicInfo objectForKey:@"topic_thread_count"]];
+			[threadCountLabel sizeToFit];
+		}
+	}
+	else {
+		UILabel *threadCountLabel = [[[UILabel alloc] initWithFrame:CGRectMake(0.f, 0.f, 50.f, cell.frame.size.height)] autorelease];
+		threadCountLabel.textAlignment = UITextAlignmentRight;
+		threadCountLabel.backgroundColor = [UIColor clearColor];
+		threadCountLabel.font = [UIFont systemFontOfSize:15.f];
+		threadCountLabel.textColor = [UIColor grayColor];
+		threadCountLabel.text = [NSString stringWithFormat:@"[%@]", [topicInfo objectForKey:@"topic_thread_count"]];
+		[threadCountLabel sizeToFit];
+		
+		cell.accessoryView = threadCountLabel;
+	}
 	
     return cell;
 }
