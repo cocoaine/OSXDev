@@ -306,6 +306,7 @@
 					NSString *xmlString = [node XMLString];
 					if ([xmlString rangeOfString:@"<img"].location != NSNotFound) {
 						if ([xmlString rangeOfString:@"/smile/"].location == NSNotFound && 
+							[xmlString rangeOfString:@"/misc/"].location == NSNotFound && 
 							[xmlString rangeOfString:@"/smilies/"].location == NSNotFound && 
 							[xmlString rangeOfString:@"/imageset/"].location == NSNotFound) {
 							xmlString = [xmlString stringByReplacingOccurrencesOfString:@"<img" withString:@"<img style=\"width:100%;\""];
