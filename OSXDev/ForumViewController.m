@@ -43,7 +43,7 @@
 	self.navigationController.view.backgroundColor = [UIColor whiteColor];
 	self.view.backgroundColor = [UIColor clearColor];
 	
-	[self.navigationItem setTitle:@"OSXDev"];
+	[self.navigationItem setTitle:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]];
 	
 	UIActivityIndicatorViewStyle indicatorViewStyle;
 	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
