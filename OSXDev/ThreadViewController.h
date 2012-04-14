@@ -11,6 +11,7 @@
 
 #import "PostingViewController.h"
 #import "LoginViewController.h"
+#import "TopicInfo.h"
 
 @interface ThreadViewController : UIViewController <UIWebViewDelegate, UIAlertViewDelegate, NetworkObjectDelegate, PostingViewControllerDelegate, LoginViewControllerDelegate>
 
@@ -34,6 +35,6 @@
 @property (retain, nonatomic) NSString *infoString;
 @property (assign, nonatomic) BOOL endOfThread;
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil topicInfo:(NSDictionary *)topicInfo;
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil topicInfo:(TopicInfo *)topicInfo;
 
 @end

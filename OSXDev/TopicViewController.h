@@ -10,6 +10,7 @@
 
 #import "PostingViewController.h"
 #import "LoginViewController.h"
+#import "ForumInfo.h"
 
 @interface TopicViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate, NetworkObjectDelegate, PostingViewControllerDelegate, LoginViewControllerDelegate>
 
@@ -34,6 +35,6 @@
 @property (retain, nonatomic) NSString *infoString;
 @property (assign, nonatomic) BOOL endOfTopic;
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil forumInfo:(NSDictionary *)forumInfo;
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil forumInfo:(ForumInfo *)forumInfo;
 
 @end

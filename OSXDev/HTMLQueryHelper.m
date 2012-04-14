@@ -10,6 +10,9 @@
 
 #import "TouchXML.h"
 
+#import "ForumInfo.h"
+#import "TopicInfo.h"
+
 #define NSStringByTrimmed(x)	[(x) stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]
 
 @implementation HTMLHelper
@@ -47,24 +50,8 @@
 			}
 		}
 		
-//		NSLog(@"title : %@, desc : %@, href : %@", title, desc, href);		
-		NSMutableDictionary *menuInfo = [NSMutableDictionary dictionaryWithCapacity:0];
-		
-		if (title != nil) {
-			[menuInfo setObject:title forKey:@"forum_title"];
-		}
-		
-		if (href != nil) {
-			[menuInfo setObject:href forKey:@"forum_href"];
-		}
-		
-		if (desc != nil) {
-			[menuInfo setObject:desc forKey:@"forum_desc"];
-		}
-		
-		if ([menuInfo count] != 0) {
-			[menuList addObject:menuInfo];
-		}
+		ForumInfo *forumInfo = [ForumInfo forumInfoWithTitle:title desc:desc href:href];
+		[menuList addObject:forumInfo];
 	}
 	
 	return menuList;
@@ -245,9 +232,12 @@
 			[topicDic setObject:topicRecentDesc forKey:@"topic_recent_desc"];
 		}
 		
-		if ([topicDic count] != 0) {
-			[topicList addObject:topicDic];
-		}
+		TopicInfo *topicInfo = [TopicInfo topicInfoWithTitle:topicTitle
+														desc:topicDesc
+														href:topicHref
+												 threadCount:topicThreadCount
+												  recentDesc:topicRecentDesc];
+		[topicList addObject:topicInfo];
 	}
 	
 	[topicInfo setObject:topicList forKey:@"topic_list"];

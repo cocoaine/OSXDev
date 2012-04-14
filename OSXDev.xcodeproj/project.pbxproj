@@ -48,6 +48,8 @@
 		99FB915D152D98C700C713F6 /* Default-Landscape~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = 99FB915B152D98C700C713F6 /* Default-Landscape~ipad.png */; };
 		99FB915E152D98C700C713F6 /* Default~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = 99FB915C152D98C700C713F6 /* Default~ipad.png */; };
 		99FB9160152ECB7300C713F6 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 99FB915F152ECB7300C713F6 /* Settings.bundle */; };
+		BF8FC2EA1539A37100E41401 /* ForumInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8FC2E91539A37100E41401 /* ForumInfo.m */; };
+		BF8FC2EE1539A37A00E41401 /* TopicInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8FC2ED1539A37A00E41401 /* TopicInfo.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -124,6 +126,10 @@
 		99FB915B152D98C700C713F6 /* Default-Landscape~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Landscape~ipad.png"; sourceTree = "<group>"; };
 		99FB915C152D98C700C713F6 /* Default~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default~ipad.png"; sourceTree = "<group>"; };
 		99FB915F152ECB7300C713F6 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		BF8FC2E81539A37100E41401 /* ForumInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ForumInfo.h; sourceTree = "<group>"; };
+		BF8FC2E91539A37100E41401 /* ForumInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ForumInfo.m; sourceTree = "<group>"; };
+		BF8FC2EC1539A37A00E41401 /* TopicInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TopicInfo.h; sourceTree = "<group>"; };
+		BF8FC2ED1539A37A00E41401 /* TopicInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TopicInfo.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -270,7 +276,7 @@
 				9929D5DD152AA50E009A3FE9 /* SFHFKeychainUtils */,
 				99C4BC9E1521915900D19A65 /* Network */,
 				BFC195751521F45E00C2387E /* HTMLQueryHelper */,
-				9929D5DC152AA474009A3FE9 /* UserInfo */,
+				BF8FC2F11539A3B300E41401 /* Info */,
 				9982312515254149000E0541 /* GlobalHeader.h */,
 				99C4BB9E15215BDF00D19A65 /* AppDelegate.h */,
 				99C4BB9F15215BDF00D19A65 /* AppDelegate.m */,
@@ -314,6 +320,34 @@
 				99856EBF1521ADE60064AA84 /* AsyncURLConnection.m */,
 			);
 			name = Network;
+			sourceTree = "<group>";
+		};
+		BF8FC2EF1539A38700E41401 /* ForumInfo */ = {
+			isa = PBXGroup;
+			children = (
+				BF8FC2E81539A37100E41401 /* ForumInfo.h */,
+				BF8FC2E91539A37100E41401 /* ForumInfo.m */,
+			);
+			name = ForumInfo;
+			sourceTree = "<group>";
+		};
+		BF8FC2F01539A39900E41401 /* TopicInfo */ = {
+			isa = PBXGroup;
+			children = (
+				BF8FC2EC1539A37A00E41401 /* TopicInfo.h */,
+				BF8FC2ED1539A37A00E41401 /* TopicInfo.m */,
+			);
+			name = TopicInfo;
+			sourceTree = "<group>";
+		};
+		BF8FC2F11539A3B300E41401 /* Info */ = {
+			isa = PBXGroup;
+			children = (
+				9929D5DC152AA474009A3FE9 /* UserInfo */,
+				BF8FC2EF1539A38700E41401 /* ForumInfo */,
+				BF8FC2F01539A39900E41401 /* TopicInfo */,
+			);
+			name = Info;
 			sourceTree = "<group>";
 		};
 		BFC195751521F45E00C2387E /* HTMLQueryHelper */ = {
@@ -422,6 +456,8 @@
 				9929D5DB152A8EB5009A3FE9 /* UserInfo.m in Sources */,
 				9929D5E0152AA50E009A3FE9 /* SFHFKeychainUtils.m in Sources */,
 				9929D5E5152AC117009A3FE9 /* PostingViewController.m in Sources */,
+				BF8FC2EA1539A37100E41401 /* ForumInfo.m in Sources */,
+				BF8FC2EE1539A37A00E41401 /* TopicInfo.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

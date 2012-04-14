@@ -40,7 +40,7 @@
 @synthesize infoString = _infoString;
 @synthesize endOfThread = _endOfThread;
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil topicInfo:(NSDictionary *)topicInfo
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil topicInfo:(TopicInfo *)topicInfo
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
@@ -50,9 +50,7 @@
 		self.start = 0;
 		self.endOfThread = NO;
 		
-//		NSString *title = [topicInfo objectForKey:@"topic_title"];
-		NSString *href = [topicInfo objectForKey:@"topic_href"];
-		
+		NSString *href = topicInfo.href;
 		self.forumId = [[QueryHelper valueWithURLString:href token:@"f"] integerValue];
 		self.topicId = [[QueryHelper valueWithURLString:href token:@"t"] integerValue];
 		NSLog(@"self.forumId : %d", self.forumId);

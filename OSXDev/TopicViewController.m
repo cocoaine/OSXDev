@@ -10,6 +10,8 @@
 
 #import "ThreadViewController.h"
 
+#import "TopicInfo.h"
+
 @interface TopicViewController ()
 - (void)clickPrevious:(id)sender;
 - (void)clickNext:(id)sender;
@@ -41,7 +43,7 @@
 @synthesize infoString = _infoString;
 @synthesize endOfTopic = _endOfTopic;
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil forumInfo:(NSDictionary *)forumInfo
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil forumInfo:(ForumInfo *)forumInfo
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
@@ -51,9 +53,9 @@
 		self.start = 0;
 		self.endOfTopic = NO;
 		
-		self.forumTitle = [forumInfo objectForKey:@"forum_title"];
-		NSString *href = [forumInfo objectForKey:@"forum_href"];
+		self.forumTitle = forumInfo.title;
 		
+		NSString *href = forumInfo.href;
 		self.forumId = [[QueryHelper valueWithURLString:href token:@"f"] integerValue];
 		
 		NetworkObject *networkObject = [[[NetworkObject alloc] initWithDelegate:self] autorelease];
@@ -346,15 +348,15 @@
 									   reuseIdentifier:cellIdentifier] autorelease];
     }
 	
-	NSDictionary *topicInfo = [_topicList objectAtIndex:indexPath.row];
+	TopicInfo *topicInfo = (TopicInfo *)[_topicList objectAtIndex:indexPath.row];
 	
-	cell.textLabel.text = [topicInfo objectForKey:@"topic_title"];
-	cell.detailTextLabel.text = [topicInfo objectForKey:@"topic_desc"];
+	cell.textLabel.text = topicInfo.title;
+	cell.detailTextLabel.text = topicInfo.desc;
 	
 	if (cell.accessoryView) {
 		if ([cell.accessoryView isKindOfClass:[UILabel class]]) {
 			UILabel *threadCountLabel = (UILabel *)cell.accessoryView;
-			threadCountLabel.text = [NSString stringWithFormat:@"[%@]", [topicInfo objectForKey:@"topic_thread_count"]];
+			threadCountLabel.text = [NSString stringWithFormat:@"[%@]", topicInfo.threadCount];
 			[threadCountLabel sizeToFit];
 		}
 	}
@@ -364,7 +366,7 @@
 		threadCountLabel.backgroundColor = [UIColor clearColor];
 		threadCountLabel.font = [UIFont systemFontOfSize:15.f];
 		threadCountLabel.textColor = [UIColor grayColor];
-		threadCountLabel.text = [NSString stringWithFormat:@"[%@]", [topicInfo objectForKey:@"topic_thread_count"]];
+		threadCountLabel.text = [NSString stringWithFormat:@"[%@]", topicInfo.threadCount];
 		[threadCountLabel sizeToFit];
 		
 		cell.accessoryView = threadCountLabel;
@@ -376,7 +378,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 	
-	NSDictionary *topicInfo = [_topicList objectAtIndex:indexPath.row];
+	TopicInfo *topicInfo = (TopicInfo *)[_topicList objectAtIndex:indexPath.row];
 	
 	ThreadViewController *viewController = [[[ThreadViewController alloc] initWithNibName:nil 
 																				   bundle:nil 

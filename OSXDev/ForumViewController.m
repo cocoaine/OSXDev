@@ -11,6 +11,9 @@
 #import "TopicViewController.h"
 #import "ThreadViewController.h"
 
+#import "ForumInfo.h"
+#import "TopicInfo.h"
+
 #define kOSXDevConnectionInfoKeyReqForum		@"req_forum"
 #define kOSXDevConnectionInfoKeyReqLogin		@"req_login"
 
@@ -281,9 +284,9 @@
 		{
 			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 			
-			NSDictionary *forumInfo = [self.forumList objectAtIndex:indexPath.row];
-			NSString *title = [forumInfo objectForKey:@"forum_title"];
-			NSString *desc = [forumInfo objectForKey:@"forum_desc"];
+			ForumInfo *forumInfo = (ForumInfo *)[self.forumList objectAtIndex:indexPath.row];
+			NSString *title = forumInfo.title;
+			NSString *desc = forumInfo.desc;
 			
 			cell.textLabel.text = title;
 			cell.detailTextLabel.text = desc;
@@ -295,14 +298,14 @@
 		{
 			cell.accessoryType = UITableViewCellAccessoryNone;
 			
-			NSDictionary *topicInfo = [self.activeTopicList objectAtIndex:indexPath.row];
-			cell.textLabel.text = [topicInfo objectForKey:@"topic_title"];
-			cell.detailTextLabel.text = [topicInfo objectForKey:@"topic_recent_desc"];
+			TopicInfo *topicInfo = (TopicInfo *)[self.activeTopicList objectAtIndex:indexPath.row];
+			cell.textLabel.text = topicInfo.title;
+			cell.detailTextLabel.text = topicInfo.recentDesc;
 			
 			if (cell.accessoryView) {
 				if ([cell.accessoryView isKindOfClass:[UILabel class]]) {
 					UILabel *threadCountLabel = (UILabel *)cell.accessoryView;
-					threadCountLabel.text = [NSString stringWithFormat:@"[%@]", [topicInfo objectForKey:@"topic_thread_count"]];
+					threadCountLabel.text = [NSString stringWithFormat:@"[%@]", topicInfo.threadCount];
 					[threadCountLabel sizeToFit];
 				}
 			}
@@ -312,7 +315,7 @@
 				threadCountLabel.backgroundColor = [UIColor clearColor];
 				threadCountLabel.font = [UIFont systemFontOfSize:15.f];
 				threadCountLabel.textColor = [UIColor grayColor];
-				threadCountLabel.text = [NSString stringWithFormat:@"[%@]", [topicInfo objectForKey:@"topic_thread_count"]];
+				threadCountLabel.text = [NSString stringWithFormat:@"[%@]", topicInfo.threadCount];
 				[threadCountLabel sizeToFit];
 				
 				cell.accessoryView = threadCountLabel;
@@ -337,7 +340,8 @@
 	switch (indexPath.section) {
 		case 0:
 		{
-			NSDictionary *forumInfo = [self.forumList objectAtIndex:indexPath.row];
+			ForumInfo *forumInfo = (ForumInfo *)[self.forumList objectAtIndex:indexPath.row];
+			
 			TopicViewController *viewController = [[[TopicViewController alloc] initWithNibName:nil 
 																						 bundle:nil 
 																					  forumInfo:forumInfo] autorelease];
@@ -347,7 +351,7 @@
 			
 		case 1:
 		{
-			NSDictionary *topicInfo = [self.activeTopicList objectAtIndex:indexPath.row];
+			TopicInfo *topicInfo = (TopicInfo *)[self.activeTopicList objectAtIndex:indexPath.row];
 			
 			ThreadViewController *viewController = [[[ThreadViewController alloc] initWithNibName:nil 
 																						   bundle:nil 
