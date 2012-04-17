@@ -4,7 +4,7 @@
   <title><![CDATA[OSXDev for iPhone/iPad]]></title>
   <link href="http://cocoaine.github.com/OSXDev/atom.xml" rel="self"/>
   <link href="http://cocoaine.github.com/OSXDev/"/>
-  <updated>2012-04-13T00:11:06+09:00</updated>
+  <updated>2012-04-17T22:31:34+09:00</updated>
   <id>http://cocoaine.github.com/OSXDev/</id>
   <author>
     <name><![CDATA[J.C. Yang]]></name>
@@ -50,6 +50,7 @@
 <h2>추후 구현 목록</h2>
 
 <ul>
+<li>토픽, 댓글 삭제 기능</li>
 <li>토픽, 댓글 검색 기능</li>
 <li>토픽, 댓글 남기기에 사진 첨부하기 기능</li>
 <li>토픽, 댓글 신고하기 기능</li>
