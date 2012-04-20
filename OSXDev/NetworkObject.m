@@ -494,6 +494,7 @@
 	// stop network indicator
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 	
+	[connection cancel];
 	NSString *connectionIdentifier = [connection identifier];
 	
 	// Failed!!!
@@ -554,6 +555,7 @@
 		}
     }
     
+	[connection cancel];
     [_connections removeObjectForKey:connID];
 }
 
